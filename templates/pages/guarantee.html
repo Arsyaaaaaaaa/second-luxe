@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}Garansi Uang Kembali | Second Luxe{% endblock %}
+{% block meta_description %}Jika barang terbukti tidak asli, Second Luxe mengembalikan uang Anda sepenuhnya. Pelajari cakupan dan cara klaim garansi.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Garansi uang kembali</h1>
+    <p class="muted lead">Jika barang yang kamu beli terbukti tidak asli, uangmu kembali penuh.</p></div>
+  <div class="prose">
+    <div class="cert-card">{{ icon('refund', 30) }}<div><strong>Pengembalian 100%</strong>
+      <p class="small muted mb-0">Termasuk ongkir pembelian dan ongkir pengembalian barang.</p></div></div>
+
+    <h2>Yang dilindungi</h2>
+    <p>Keaslian barang. Setiap produk punya nomor sertifikat. Bila ada pihak yang terpercaya (misalnya layanan autentikasi independen atau gerai resmi brand) menyatakan barang tidak asli, kami mengganti penuh.</p>
+
+    <h2>Cara klaim</h2>
+    <ol>
+      <li>Hubungi kami lewat <a href="/kontak">halaman kontak</a> atau WhatsApp dalam 30 hari setelah barang diterima.</li>
+      <li>Kirim nomor pesanan, foto barang, dan hasil pemeriksaan pihak ketiga.</li>
+      <li>Tim kami menilai ulang dalam 3 hari kerja.</li>
+      <li>Jika klaim disetujui, kirim barang kembali. Uang dikembalikan dalam 3 sampai 5 hari kerja setelah barang kami terima.</li>
+    </ol>
+
+    <h2>Yang tidak tercakup</h2>
+    <p>Kerusakan akibat pemakaian setelah barang diterima, dan minus yang sudah tertulis di halaman produk. Untuk ketidaksesuaian kondisi, lihat <a href="/retur">kebijakan retur</a>.</p>
+    <p><a class="btn btn-primary" href="/kontak">Ajukan klaim</a></p>
+  </div>
+</div>
+{% endblock %}

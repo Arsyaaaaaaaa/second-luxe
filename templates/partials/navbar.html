@@ -1,0 +1,101 @@
+{% from "partials/icons.html" import icon %}
+<div class="announce">
+  <span>Setiap produk terverifikasi keasliannya</span>
+  <span class="announce-sep" aria-hidden="true"></span>
+  <span>Retur 7 hari</span>
+</div>
+
+<header class="site-header" id="site-header">
+  <div class="container nav">
+    <button class="icon-btn nav-toggle" type="button" aria-label="Buka menu" aria-controls="drawer" aria-expanded="false" data-drawer-open>
+      {{ icon('menu', 22) }}
+    </button>
+
+    <a class="logo" href="/" aria-label="Second Luxe, ke beranda">Second Luxe</a>
+
+    <nav class="nav-links" aria-label="Navigasi utama">
+      <a href="/katalog">Semua Produk</a>
+      <a href="/katalog?kategori=tas">Tas</a>
+      <a href="/katalog?kategori=pakaian">Pakaian</a>
+      <a href="/katalog?kategori=sepatu">Sepatu</a>
+      <a href="/katalog?kategori=aksesoris">Aksesoris</a>
+      <div class="dropdown">
+        <button class="dropdown-btn" type="button" aria-expanded="false" aria-haspopup="true">Kepercayaan {{ icon('chevron', 14) }}</button>
+        <div class="dropdown-menu">
+          <a href="/autentikasi">Proses Autentikasi</a>
+          <a href="/garansi">Garansi Uang Kembali</a>
+          <a href="/retur">Kebijakan Retur</a>
+        </div>
+      </div>
+      <a href="/jual">Jual ke Kami</a>
+    </nav>
+
+    <div class="nav-actions">
+      <button class="icon-btn" type="button" aria-label="Cari produk" aria-expanded="false" aria-controls="search-panel" data-search-toggle>{{ icon('search') }}</button>
+      <button class="icon-btn" type="button" aria-label="Ganti tema gelap atau terang" aria-pressed="false" data-theme-toggle>
+        <span class="theme-moon">{{ icon('moon') }}</span><span class="theme-sun">{{ icon('sun') }}</span>
+      </button>
+      <a class="icon-btn has-badge" href="/wishlist" aria-label="Wishlist ({{ wishlist_count }} produk)">
+        {{ icon('heart') }}{% if wishlist_count %}<span class="count-badge">{{ wishlist_count }}</span>{% endif %}
+      </a>
+      <a class="icon-btn has-badge" href="/keranjang" aria-label="Keranjang ({{ cart_count }} produk)">
+        {{ icon('bag') }}{% if cart_count %}<span class="count-badge">{{ cart_count }}</span>{% endif %}
+      </a>
+      <div class="dropdown dropdown-right">
+        <button class="icon-btn dropdown-btn" type="button" aria-label="Menu akun" aria-expanded="false" aria-haspopup="true">{{ icon('user') }}</button>
+        <div class="dropdown-menu">
+          {% if current_user %}
+            <span class="dropdown-label">Halo, {{ current_user['name'].split(' ')[0] }}</span>
+            <a href="/akun">Profil Saya</a>
+            <a href="/akun/pesanan">Pesanan</a>
+            <a href="/akun/tawaran">Tawaran &amp; Booking</a>
+            <a href="/akun/notifikasi">Notifikasi{% if unread_notif %} ({{ unread_notif }}){% endif %}</a>
+            {% if current_user['role'] == 'admin' %}<a href="/admin">Panel Admin</a>{% endif %}
+            <form action="/keluar" method="post">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" class="dropdown-link-btn">Keluar</button>
+            </form>
+          {% else %}
+            <a href="/masuk">Masuk</a>
+            <a href="/daftar">Daftar</a>
+            <a href="/lacak">Lacak Pesanan</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="search-panel" id="search-panel" hidden>
+    <div class="container">
+      <form class="search-form" action="/katalog" method="get" role="search" autocomplete="off">
+        <label class="sr-only" for="search-input">Cari produk</label>
+        <input id="search-input" name="q" type="search" placeholder="Cari brand atau produk, misalnya Chanel flap" data-suggest-url="/api/cari-saran">
+        <button class="btn btn-primary" type="submit">Cari</button>
+      </form>
+      <ul class="suggestions" id="search-suggestions" hidden></ul>
+    </div>
+  </div>
+</header>
+
+<div class="drawer-overlay" data-drawer-close hidden></div>
+<aside class="drawer" id="drawer" aria-label="Menu navigasi" hidden>
+  <div class="drawer-head">
+    <span class="logo">Second Luxe</span>
+    <button class="icon-btn" type="button" aria-label="Tutup menu" data-drawer-close>{{ icon('close', 22) }}</button>
+  </div>
+  <nav class="drawer-nav">
+    <a href="/">Beranda</a>
+    <a href="/katalog">Semua Produk</a>
+    <a href="/katalog?kategori=tas">Tas</a>
+    <a href="/katalog?kategori=pakaian">Pakaian</a>
+    <a href="/katalog?kategori=sepatu">Sepatu</a>
+    <a href="/katalog?kategori=aksesoris">Aksesoris</a>
+    <a href="/jual">Jual ke Kami</a>
+    <a href="/autentikasi">Proses Autentikasi</a>
+    <a href="/garansi">Garansi</a>
+    <a href="/blog">Blog</a>
+    <a href="/tentang">Tentang Kami</a>
+    <a href="/faq">FAQ</a>
+    <a href="/kontak">Kontak</a>
+  </nav>
+</aside>

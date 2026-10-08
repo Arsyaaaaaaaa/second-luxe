@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Daftar | Second Luxe{% endblock %}
+{% block meta_description %}Buat akun Second Luxe gratis untuk menyimpan wishlist, melacak pesanan, dan menawar harga.{% endblock %}
+
+{% block content %}
+{% macro err(name) %}{% if errors.get(name) %}<p class="error" role="alert">{{ errors[name] }}</p>{% endif %}{% endmacro %}
+<div class="container">
+  <div class="form-card form-narrow">
+    <h1 class="h-form">Buat akun</h1>
+    <p class="muted small">Sudah punya akun? <a href="/masuk?next={{ next|urlencode }}">Masuk</a></p>
+
+    <form action="/daftar" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="next" value="{{ next }}">
+      <div class="field">
+        <label for="name">Nama lengkap</label>
+        <input id="name" name="name" type="text" value="{{ form.name }}" autocomplete="name" maxlength="80" required>
+        {{ err('name') }}
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" value="{{ form.email }}" autocomplete="email" required>
+        {{ err('email') }}
+      </div>
+      <div class="field">
+        <label for="phone">Nomor HP <span class="muted">(opsional)</span></label>
+        <input id="phone" name="phone" type="tel" value="{{ form.phone }}" autocomplete="tel" placeholder="081234567890">
+        {{ err('phone') }}
+      </div>
+      <div class="field">
+        <label for="password">Kata sandi</label>
+        <input id="password" name="password" type="password" autocomplete="new-password" minlength="8" required>
+        <p class="hint">Minimal 8 karakter, memuat huruf dan angka.</p>
+        {{ err('password') }}
+      </div>
+      <div class="field">
+        <label for="password2">Ulangi kata sandi</label>
+        <input id="password2" name="password2" type="password" autocomplete="new-password" required>
+        {{ err('password2') }}
+      </div>
+      <button class="btn btn-primary btn-block" type="submit">Daftar</button>
+    </form>
+
+    <div class="auth-divider"><span>atau</span></div>
+    <a class="btn btn-outline btn-block" href="/masuk/google?next={{ next|urlencode }}">Daftar dengan Google (simulasi)</a>
+  </div>
+</div>
+{% endblock %}

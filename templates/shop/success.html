@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Pesanan Berhasil | Second Luxe{% endblock %}
+{% block meta_description %}Pembayaran diterima. Terima kasih sudah berbelanja di Second Luxe.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <ol class="steps" aria-label="Langkah pembelian">
+    <li class="is-done">1. Keranjang</li><li class="is-done">2. Pengiriman</li><li class="is-done">3. Pembayaran</li><li class="is-current">4. Selesai</li>
+  </ol>
+  <section class="success-box">
+    <div class="success-mark" aria-hidden="true">&#10003;</div>
+    <h1>Terima kasih, pembayaran diterima</h1>
+    <p class="lead" style="margin-inline:auto">Nomor pesanan <strong>{{ order.order_no }}</strong></p>
+    <p class="muted">Konfirmasi pesanan sudah dikirim ke email (simulasi, tersimpan di <code>instance/emails.log</code>). Kami memeriksa dan mengemas barangmu dalam 1 hari kerja.</p>
+
+    <div class="summary text-left" style="max-width:520px;margin:1.5rem auto">
+      <ul class="mini-items">
+        {% for i in items %}
+        <li><img src="{{ i.image_url or '/placeholder/%d.svg' % i.product_id }}" alt="" width="48" height="60"><span>{{ i.product_name }}</span><strong>{{ i.price|rupiah }}</strong></li>
+        {% endfor %}
+      </ul>
+      <div class="summary-row"><span>Ongkir ({{ order.courier }})</span><span>{{ order.shipping_cost|rupiah }}</span></div>
+      {% if order.discount %}<div class="summary-row"><span>Diskon</span><span class="verified-text">-{{ order.discount|rupiah }}</span></div>{% endif %}
+      <div class="summary-row summary-total"><span>Total dibayar</span><span>{{ order.total|rupiah }}</span></div>
+    </div>
+
+    {% if guest %}<p class="small muted">Simpan nomor pesanan ini. Untuk melacak pesanan, buka <a href="/lacak">Lacak Pesanan</a> dan masukkan nomor pesanan beserta email yang kamu pakai.</p>{% endif %}
+    <div class="cluster" style="justify-content:center">
+      {% if current_user %}<a class="btn btn-primary" href="/akun/pesanan/{{ order.order_no }}">Lihat pesanan saya</a>
+      {% else %}<a class="btn btn-primary" href="/lacak?no={{ order.order_no }}">Lacak pesanan</a>{% endif %}
+      <a class="btn btn-outline" href="/katalog">Lanjut belanja</a>
+    </div>
+  </section>
+</div>
+{% endblock %}

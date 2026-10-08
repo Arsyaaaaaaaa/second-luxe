@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Pengajuan Jual ke Kami | Second Luxe{% endblock %}
+{% block meta_description %}Pantau pengajuan Jual ke Kami dan penawaran final dari Second Luxe.{% endblock %}
+{% set label = {'pending':'Menunggu penilaian','offered':'Penawaran final','accepted':'Disetujui','rejected':'Ditolak'} %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Pengajuan jual</h1></div>
+  <div class="account-layout">
+    {% include "account/_nav.html" %}
+    <div>
+      {% if rows %}
+      <div class="stack">
+        {% for s in rows %}
+        <article class="order-card">
+          <div class="order-head">
+            <div><strong>{{ s.brand }} {{ s.item_name }}</strong><p class="small muted mb-0">{{ s.created_at|tanggal }} &middot; harapan {{ s.expected_price|rupiah }}</p></div>
+            <span class="status status-{{ s.status }}">{{ label[s.status] }}</span>
+          </div>
+          {% if s.status == 'offered' %}<p class="mb-1">Penawaran final: <strong>{{ s.final_offer|rupiah }}</strong></p>{% endif %}
+          <a class="btn btn-outline btn-sm" href="/akun/jual/{{ s.id }}">Lihat detail</a>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty"><h2>Belum ada pengajuan</h2><p class="muted">Punya barang branded yang jarang dipakai?</p><a class="btn btn-primary" href="/jual">Jual ke kami</a></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

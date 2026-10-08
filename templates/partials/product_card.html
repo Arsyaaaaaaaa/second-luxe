@@ -1,0 +1,32 @@
+{# Komponen kartu produk. Pakai: {% from "partials/product_card.html" import card with context %} #}
+{% from "partials/icons.html" import icon %}
+{% macro card(p) -%}
+{% set img = p.image_url or ("/placeholder/%d.svg?v=1" % p.id) %}
+{% set discount = ((1 - p.price / p.original_price) * 100)|round|int if p.original_price and p.original_price > p.price else 0 %}
+<article class="card{% if p.status == 'sold' %} is-sold{% endif %}">
+  <a class="card-media" href="/produk/{{ p.slug }}" aria-label="{{ p.brand_name }} {{ p.name }}">
+    <img src="{{ img }}" alt="{{ p.brand_name }} {{ p.name }}" loading="lazy" width="400" height="500">
+    <span class="card-badges">
+      {% if p.status == 'sold' %}<span class="badge badge-sold">Sold out</span>
+      {% elif p.status == 'held' %}<span class="badge badge-held">Dibooking</span>
+      {% elif discount %}<span class="badge badge-sale">-{{ discount }}%</span>{% endif %}
+    </span>
+  </a>
+  <form class="card-wish" action="/wishlist/toggle/{{ p.id }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button type="submit" class="wish-btn{% if p.id in wishlist_ids %} is-active{% endif %}" aria-label="{{ 'Hapus dari' if p.id in wishlist_ids else 'Simpan ke' }} wishlist" aria-pressed="{{ 'true' if p.id in wishlist_ids else 'false' }}">{{ icon('heart', 18) }}</button>
+  </form>
+  <div class="card-body">
+    <p class="card-brand">{{ p.brand_name }}</p>
+    <h3 class="card-title"><a href="/produk/{{ p.slug }}">{{ p.name }}</a></h3>
+    <p class="card-meta">
+      <span class="verified-mini">{{ icon('shield', 14) }} Terverifikasi</span>
+      <span>Kondisi {{ p.condition_score }}/10</span>
+    </p>
+    <p class="price-row">
+      <span class="price">{{ p.price|rupiah }}</span>
+      {% if discount %}<s class="price-old">{{ p.original_price|rupiah }}</s>{% endif %}
+    </p>
+  </div>
+</article>
+{%- endmacro %}

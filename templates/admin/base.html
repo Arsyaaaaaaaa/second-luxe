@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="admin-layout">
+  {% include "admin/_nav.html" %}
+  <main class="admin-main">
+    <div class="admin-mobile-nav">
+      <a href="/admin">Dashboard</a><a href="/admin/produk">Produk</a><a href="/admin/pesanan">Pesanan</a><a href="/admin/master">Konten</a>
+    </div>
+    {% block admin_content %}{% endblock %}
+  </main>
+</div>
+{% endblock %}

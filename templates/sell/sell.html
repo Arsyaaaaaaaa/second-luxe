@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}Jual Barang Branded ke Kami | Second Luxe{% endblock %}
+{% block meta_description %}Jual tas, pakaian, sepatu, atau aksesoris branded Anda. Unggah foto, dapat estimasi harga awal, lalu penawaran final dari tim Second Luxe.{% endblock %}
+
+{% block content %}
+{% macro err(name) %}{% if errors.get(name) %}<p class="error" role="alert">{{ errors[name] }}</p>{% endif %}{% endmacro %}
+<div class="container">
+  <div class="page-head"><h1>Jual ke kami</h1>
+    <p class="muted lead">Barang branded yang jarang dipakai bisa jadi uang. Kirim foto, dapat estimasi dalam hitungan detik.</p></div>
+
+  <ol class="process-steps">
+    <li><strong>Isi detail dan foto</strong><p class="small muted mb-0">Brand, kondisi, harga harapan, dan foto dari beberapa sisi.</p></li>
+    <li><strong>Estimasi awal</strong><p class="small muted mb-0">Sistem memberi rentang harga beserta alasannya.</p></li>
+    <li><strong>Penawaran final</strong><p class="small muted mb-0">Tim kami memeriksa data, lalu mengirim nominal final.</p></li>
+    <li><strong>Kirim dan terima uang</strong><p class="small muted mb-0">Setelah setuju, barang dikirim dan dibayar setelah lolos autentikasi.</p></li>
+  </ol>
+
+  <section class="section-tight" aria-labelledby="form-jual">
+    <h2 id="form-jual">Ajukan barangmu</h2>
+    {% if not current_user %}
+    <div class="form-card">
+      <p>Masuk dulu agar pengajuan dan penawaran final bisa kamu pantau di akun.</p>
+      <div class="cluster"><a class="btn btn-primary" href="/masuk?next=/jual">Masuk</a><a class="btn btn-outline" href="/daftar">Daftar</a></div>
+    </div>
+    {% else %}
+    <form class="form-card" action="/jual" method="post" enctype="multipart/form-data" novalidate data-sell-form>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="form-row">
+        <div class="field"><label for="brand">Brand</label>
+          <input id="brand" name="brand" type="text" list="brand-list" value="{{ form.brand }}" maxlength="40" placeholder="Contoh: Chanel" required>
+          <datalist id="brand-list">{% for b in brands %}<option value="{{ b }}">{% endfor %}</datalist>{{ err('brand') }}</div>
+        <div class="field"><label for="item_name">Nama barang</label>
+          <input id="item_name" name="item_name" type="text" value="{{ form.item_name }}" maxlength="100" placeholder="Contoh: Classic Flap Medium" required>{{ err('item_name') }}</div>
+      </div>
+      <div class="form-row">
+        <div class="field"><label for="condition">Kondisi</label>
+          <select id="condition" name="condition" required>
+            <option value="">Pilih kondisi</option>
+            {% for key, c in conditions.items() %}<option value="{{ key }}" {{ 'selected' if form.condition == key }}>{{ c[0] }}</option>{% endfor %}
+          </select>{{ err('condition') }}</div>
+        <div class="field"><label for="expected_price">Harga harapan (Rupiah)</label>
+          <div class="amount-input"><span aria-hidden="true">Rp</span>
+            <input id="expected_price" name="expected_price" type="text" inputmode="numeric" value="{{ form.expected_price }}" maxlength="20" placeholder="5000000" required></div>
+          {{ err('expected_price') }}</div>
+      </div>
+      <div class="field"><label for="description">Keterangan tambahan (opsional)</label>
+        <textarea id="description" name="description" rows="3" maxlength="1000" placeholder="Tahun beli, kelengkapan (box, nota, dustbag), minus yang ada">{{ form.description }}</textarea></div>
+      <div class="field"><label for="photos">Foto barang (maks. {{ max_photos }}, JPG/PNG/WEBP, 5 MB per foto)</label>
+        <input id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp" multiple required data-photo-input data-max="{{ max_photos }}">
+        <p class="hint">Sertakan tampak depan, belakang, detail logo, dan bagian dalam.</p>
+        <div class="upload-previews" data-photo-previews></div>
+        <p class="error" role="alert" data-photo-error hidden></p>{{ err('photos') }}</div>
+      <button class="btn btn-primary" type="submit">Kirim pengajuan</button>
+    </form>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/forms.js') }}" defer></script>{% endblock %}

@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}Sertifikat {{ p.certificate_no }} | Second Luxe{% endblock %}
+{% block meta_description %}Sertifikat keaslian digital {{ p.certificate_no }} untuk {{ p.brand_name }} {{ p.name }}.{% endblock %}
+{% block head_extra %}<meta name="robots" content="noindex">{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="certificate">
+    <p class="cert-logo">Second Luxe</p>
+    <h1 class="cert-title">Sertifikat Keaslian Digital</h1>
+    <p class="cert-no">{{ p.certificate_no }}</p>
+    <div class="cert-seal">{{ icon('shield', 44) }}<span>Authenticity Verified</span></div>
+    <p class="cert-statement">Dengan ini Second Luxe menyatakan bahwa barang berikut telah melalui pemeriksaan autentikasi dan dinyatakan asli.</p>
+    <h2 class="cert-item">{{ p.brand_name }} {{ p.name }}</h2>
+    <dl class="cert-grid">
+      <div><dt>Kategori</dt><dd>{{ p.category_name }}</dd></div>
+      <div><dt>Warna</dt><dd>{{ p.color }}</dd></div>
+      <div><dt>Bahan</dt><dd>{{ p.material }}</dd></div>
+      <div><dt>Ukuran</dt><dd>{{ p.size }}</dd></div>
+      <div><dt>Skor kondisi</dt><dd>{{ p.condition_score }}/10</dd></div>
+      <div><dt>Kelengkapan</dt><dd>{{ completeness|join(', ')|capitalize if completeness else 'Barang saja' }}</dd></div>
+      <div><dt>Tanggal verifikasi</dt><dd>{{ p.created_at|tanggal }}</dd></div>
+      <div><dt>Status barang</dt><dd>{{ {'available':'Tersedia','held':'Dibooking','sold':'Terjual'}[p.status] }}</dd></div>
+    </dl>
+    {% if p.flaws and p.flaws != 'Tidak ada.' %}<p class="small muted"><strong>Catatan minus:</strong> {{ p.flaws }}</p>{% endif %}
+    <p class="cert-sign">Tim Autentikasi Second Luxe</p>
+    <p class="small muted">Verifikasi keaslian sertifikat ini di {{ request.host }}/sertifikat/{{ p.certificate_no }}</p>
+  </div>
+  <div class="cluster no-print" style="justify-content:center">
+    <button class="btn btn-primary" type="button" data-print>Cetak sertifikat</button>
+    <a class="btn btn-outline" href="/produk/{{ p.slug }}">Kembali ke produk</a>
+  </div>
+</div>
+{% endblock %}

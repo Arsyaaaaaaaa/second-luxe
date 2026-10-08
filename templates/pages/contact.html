@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}Kontak | Second Luxe{% endblock %}
+{% block meta_description %}Hubungi Second Luxe lewat formulir atau WhatsApp. Kami membalas dalam 1x24 jam kerja.{% endblock %}
+
+{% block content %}
+{% macro err(name) %}{% if errors.get(name) %}<p class="error" role="alert">{{ errors[name] }}</p>{% endif %}{% endmacro %}
+<div class="container">
+  <div class="page-head"><h1>Kontak</h1><p class="muted">Kami membalas dalam 1x24 jam kerja.</p></div>
+  <div class="contact-grid">
+    <form class="form-card" action="/kontak" method="post" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="form-row">
+        <div class="field"><label for="name">Nama</label><input id="name" name="name" type="text" value="{{ form.name }}" maxlength="80" required>{{ err('name') }}</div>
+        <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" value="{{ form.email }}" maxlength="254" required>{{ err('email') }}</div>
+      </div>
+      <div class="field"><label for="topic">Topik</label>
+        <select id="topic" name="topic">{% for t in topics %}<option value="{{ t }}" {{ 'selected' if form.topic == t }}>{{ t }}</option>{% endfor %}</select>{{ err('topic') }}</div>
+      <div class="field"><label for="message">Pesan</label><textarea id="message" name="message" rows="5" maxlength="1500" required>{{ form.message }}</textarea>{{ err('message') }}</div>
+      <button class="btn btn-primary" type="submit">Kirim pesan</button>
+    </form>
+    <aside class="form-card">
+      <h2 class="h-card">Lebih cepat lewat WhatsApp</h2>
+      <p class="small muted">Senin sampai Sabtu, 09.00 sampai 18.00 WIB.</p>
+      <a class="btn btn-outline btn-block" href="https://wa.me/{{ whatsapp_number }}" target="_blank" rel="noopener noreferrer">{{ icon('whatsapp', 18) }} Chat WhatsApp</a>
+      <h2 class="h-card mt-2">Ikuti kami</h2>
+      <div class="social">
+        <a href="https://instagram.com/secondluxe" target="_blank" rel="noopener noreferrer" aria-label="Instagram">{{ icon('instagram', 22) }}</a>
+        <a href="https://tiktok.com/@secondluxe" target="_blank" rel="noopener noreferrer" aria-label="TikTok">{{ icon('tiktok', 22) }}</a>
+        <a href="https://youtube.com/@secondluxe" target="_blank" rel="noopener noreferrer" aria-label="YouTube">{{ icon('youtube', 22) }}</a>
+      </div>
+    </aside>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}Keranjang | Second Luxe{% endblock %}
+{% block meta_description %}Keranjang belanja Second Luxe.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <ol class="steps" aria-label="Langkah pembelian">
+    <li class="is-current">1. Keranjang</li><li>2. Pengiriman</li><li>3. Pembayaran</li><li>4. Selesai</li>
+  </ol>
+  <div class="page-head" style="padding-top:0"><h1>Keranjang</h1></div>
+
+  {% if items %}
+  <div class="cart-layout">
+    <div>
+      {% if blocked %}
+      <p class="flash flash-warning small" role="alert">{{ blocked }} produk sudah tidak tersedia. Hapus dari keranjang untuk melanjutkan ke checkout.</p>
+      {% endif %}
+      {% for i in items %}{% set p = i.p %}
+      <article class="line-item{% if not i.ok %} is-blocked{% endif %}">
+        <a href="/produk/{{ p.slug }}"><img src="{{ p.image_url or '/placeholder/%d.svg' % p.id }}" alt="{{ p.brand_name }} {{ p.name }}" width="110" height="138" loading="lazy"></a>
+        <div class="line-body">
+          <p class="card-brand">{{ p.brand_name }}</p>
+          <h2 class="line-title"><a href="/produk/{{ p.slug }}">{{ p.name }}</a></h2>
+          <p class="small muted mb-1">Kondisi {{ p.condition_score }}/10{% if p.size %} &middot; Ukuran {{ p.size }}{% endif %}</p>
+          {% if i.ok %}<p class="price mb-1">{{ p.price|rupiah }}{% if i.agreed %} <s class="price-old">{{ p.list_price|rupiah }}</s>{% endif %}</p>
+          {% if i.agreed %}<p class="small muted mb-1">Harga kesepakatan tawar harga</p>{% endif %}
+          {% else %}<p class="small sale-text mb-1">{{ i.reason }}</p>{% endif %}
+          <form action="/keranjang/hapus/{{ p.id }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button class="btn btn-ghost btn-sm" type="submit">Hapus</button>
+          </form>
+        </div>
+      </article>
+      {% endfor %}
+      <p class="small muted mt-2">Stok setiap produk hanya 1 unit. Produk baru aman setelah pembayaran selesai; gunakan Booking 24 Jam di halaman produk untuk menahannya lebih dulu.</p>
+    </div>
+
+    <aside class="summary" aria-label="Ringkasan belanja">
+      <h2 class="summary-title">Ringkasan</h2>
+      <div class="summary-row"><span>Subtotal ({{ items|selectattr('ok')|list|length }} produk)</span><span>{{ subtotal|rupiah }}</span></div>
+      <div class="summary-row muted"><span>Ongkir dan voucher</span><span>Dihitung di checkout</span></div>
+      <div class="summary-row summary-total"><span>Total sementara</span><span>{{ subtotal|rupiah }}</span></div>
+      {% if blocked %}<button class="btn btn-block mt-2" type="button" disabled>Checkout</button>
+      {% else %}<a class="btn btn-primary btn-block mt-2" href="/checkout">Lanjut ke Checkout</a>{% endif %}
+      {% if not current_user %}<p class="small muted mt-2 mb-0">Checkout bisa sebagai tamu. <a href="/masuk?next=/keranjang">Masuk</a> agar keranjang tersimpan di semua perangkat.</p>{% endif %}
+    </aside>
+  </div>
+  {% else %}
+  <div class="empty">
+    <h2>Keranjangmu masih kosong</h2>
+    <p class="muted">Temukan tas, sepatu, dan pakaian branded yang sudah terverifikasi keasliannya.</p>
+    <a class="btn btn-primary" href="/katalog">Mulai belanja</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

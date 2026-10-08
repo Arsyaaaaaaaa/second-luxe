@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% from "partials/ui.html" import stars %}
+{% from "partials/product_card.html" import card with context %}
+
+{% block title %}{{ p.brand_name }} {{ p.name }} ({{ p.price|rupiah }}) | Second Luxe{% endblock %}
+{% block meta_description %}{{ p.brand_name }} {{ p.name }}, kondisi {{ p.condition_score }}/10, {{ p.price|rupiah }}. Terverifikasi asli, sertifikat {{ p.certificate_no }}.{% endblock %}
+{% block og_type %}product{% endblock %}
+{% block og_image %}{{ request.host_url.rstrip('/') }}{{ images[0].url if images else '/placeholder/%d.svg' % p.id }}{% endblock %}
+{% block head_extra %}<script type="application/ld+json">{{ json_ld|tojson }}</script>{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumb" aria-label="Breadcrumb">
+    <ol>
+      <li><a href="/">Beranda</a></li>
+      <li><a href="/katalog?kategori={{ p.category_slug }}">{{ p.category_name }}</a></li>
+      <li><a href="/katalog?brand={{ p.brand_slug }}">{{ p.brand_name }}</a></li>
+    </ol>
+  </nav>
+
+  <div class="product-layout">
+    <div class="gallery" data-gallery>
+      <div class="gallery-main" data-gallery-main tabindex="0" role="button" aria-label="Perbesar atau perkecil foto">
+        <img src="{{ images[0].url if images else '/placeholder/%d.svg' % p.id }}" alt="{{ p.brand_name }} {{ p.name }}" width="800" height="1000" data-gallery-img>
+        {% if p.status == 'sold' %}<span class="card-badges"><span class="badge badge-sold">Sold out</span></span>{% endif %}
+      </div>
+      {% if images|length > 1 %}
+      <div class="gallery-thumbs">
+        {% for im in images %}
+        <button type="button" class="{{ 'is-active' if loop.first }}" data-src="{{ im.url }}" aria-label="Lihat foto {{ loop.index }}"><img src="{{ im.url }}" alt="" loading="lazy" width="120" height="150"></button>
+        {% endfor %}
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="product-info">
+      <p class="product-brand"><a href="/katalog?brand={{ p.brand_slug }}" style="text-decoration:none">{{ p.brand_name }}</a></p>
+      <h1>{{ p.name }}</h1>
+      <p class="cluster mb-1">
+        <span class="badge badge-verified">{{ icon('shield', 14) }} Authenticity Verified</span>
+        {% if reviews %}<a class="rating-line" href="#ulasan" style="text-decoration:none">{{ stars(rating) }} {{ rating }} ({{ reviews|length }} ulasan)</a>{% endif %}
+      </p>
+      <p class="price-row mt-2">
+        <span class="price-lg">{{ p.price|rupiah }}</span>
+        {% if discount %}<s class="price-old">{{ p.original_price|rupiah }}</s><span class="badge badge-sale">-{{ discount }}%</span>{% endif %}
+      </p>
+      {% if p.original_price %}<p class="small muted">Harga baru sekitar {{ p.original_price|rupiah }}</p>{% endif %}
+
+      <div class="buy-box">
+        {% if p.status == 'available' %}
+          <form action="/keranjang/tambah/{{ p.id }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <button class="btn btn-primary btn-block" type="submit">Tambah ke Keranjang</button>
+          </form>
+          <form action="/keranjang/tambah/{{ p.id }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+            <input type="hidden" name="next" value="checkout">
+            <button class="btn btn-outline btn-block" type="submit">Beli Sekarang</button>
+          </form>
+          <div class="buy-secondary">
+            <a class="btn btn-outline btn-sm" href="/tawar/{{ p.id }}">Tawar Harga</a>
+            <form action="/booking/{{ p.id }}" method="post">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button class="btn btn-outline btn-sm" type="submit">Booking 24 Jam</button>
+            </form>
+            <a class="btn btn-outline btn-sm" href="{{ wa_link }}" target="_blank" rel="noopener noreferrer">{{ icon('whatsapp', 16) }} WhatsApp</a>
+          </div>
+          <p class="small muted">Stok tinggal 1 unit. Booking menahan produk selama 24 jam tanpa biaya.</p>
+        {% elif p.status == 'held' %}
+          <button class="btn btn-block" type="button" disabled>Sedang dibooking</button>
+          <p class="small muted">Produk ini ditahan pembeli lain{% if hold %} sampai {{ hold.expires_at }} UTC{% endif %}. Jika tidak dibayar, produk otomatis tersedia kembali.</p>
+          <a class="btn btn-outline btn-sm" href="{{ wa_link }}" target="_blank" rel="noopener noreferrer">{{ icon('whatsapp', 16) }} Tanya via WhatsApp</a>
+        {% else %}
+          <button class="btn btn-block" type="button" disabled>Sold out</button>
+          <p class="small muted">Produk ini sudah terjual. Lihat pilihan serupa dari brand yang sama.</p>
+          <a class="btn btn-outline btn-sm" href="/katalog?brand={{ p.brand_slug }}">Lihat produk {{ p.brand_name }} lainnya</a>
+        {% endif %}
+        <form action="/wishlist/toggle/{{ p.id }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button class="btn btn-ghost btn-sm" type="submit">{{ icon('heart', 16) }} {{ 'Hapus dari wishlist' if p.id in wishlist_ids else 'Simpan ke wishlist' }}</button>
+        </form>
+      </div>
+
+      <div class="condition">
+        <div class="condition-top"><strong>Kondisi barang</strong><span class="condition-score">{{ p.condition_score }}/10</span></div>
+        <div class="bar" role="img" aria-label="Skor kondisi {{ p.condition_score }} dari 10"><span style="width: {{ p.condition_score * 10 }}%"></span></div>
+        <p class="small muted mt-1 mb-0">{{ p.condition_notes }}</p>
+      </div>
+
+      <div class="flaw-box">
+        <h3>Minus dan cacat</h3>
+        <p class="mb-0">{{ p.flaws or 'Tidak ada minus yang tercatat.' }}</p>
+      </div>
+
+      <h2 class="h-sub">Deskripsi</h2>
+      <p>{{ p.description }}</p>
+
+      <h2 class="h-sub">Detail produk</h2>
+      <table class="spec-table">
+        <tr><th scope="row">Brand</th><td>{{ p.brand_name }}</td></tr>
+        <tr><th scope="row">Kategori</th><td>{{ p.category_name }}</td></tr>
+        <tr><th scope="row">Untuk</th><td>{{ p.gender|capitalize }}</td></tr>
+        <tr><th scope="row">Ukuran</th><td>{{ p.size }}</td></tr>
+        <tr><th scope="row">Warna</th><td>{{ p.color }}</td></tr>
+        <tr><th scope="row">Bahan</th><td>{{ p.material }}</td></tr>
+        <tr><th scope="row">Kelengkapan</th><td>{{ completeness|join(', ')|capitalize if completeness else 'Barang saja' }}</td></tr>
+        <tr><th scope="row">Nomor sertifikat</th><td>{{ p.certificate_no }}</td></tr>
+      </table>
+
+      <div class="cert-card mt-2">
+        {{ icon('shield', 30) }}
+        <div>
+          <strong>Sertifikat keaslian digital</strong>
+          <p class="small muted mb-0">Nomor {{ p.certificate_no }}. <a href="/sertifikat/{{ p.certificate_no }}">Lihat dan cetak sertifikat</a></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="section-tight" id="ulasan" aria-labelledby="ulasan-judul">
+    <h2 id="ulasan-judul">Ulasan pembeli</h2>
+    {% if reviews %}
+      <p class="rating-line mb-2">{{ stars(rating, 20) }} <strong>{{ rating }}</strong> dari {{ reviews|length }} ulasan</p>
+      {% if review_summary %}
+      <div class="ai-summary mb-2"><strong>Ringkasan ulasan oleh AI</strong><p class="mb-0 small">{{ review_summary }}</p></div>
+      {% endif %}
+      <div class="prose">
+        {% for r in reviews %}
+        <article class="review">
+          <div class="cluster">{{ stars(r.rating) }} <strong>{{ r.reviewer_name }}</strong> <span class="small muted">{{ r.created_at|tanggal }}</span></div>
+          <p class="mb-0 mt-1">{{ r.comment }}</p>
+        </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="muted">Belum ada ulasan untuk produk ini.</p>
+    {% endif %}
+  </section>
+
+  {% if related %}
+  <section class="section-tight">
+    <div class="section-head"><h2>Produk terkait</h2></div>
+    <div class="product-grid">{% for r in related %}{{ card(r) }}{% endfor %}</div>
+  </section>
+  {% endif %}
+
+  {% if recent %}
+  <section class="section-tight">
+    <div class="section-head"><h2>Baru dilihat</h2></div>
+    <div class="product-grid">{% for r in recent %}{{ card(r) }}{% endfor %}</div>
+  </section>
+  {% endif %}
+</div>
+
+{% if p.status == 'available' %}
+<div class="sticky-buy" role="region" aria-label="Beli produk ini">
+  <span class="price">{{ p.price|rupiah }}</span>
+  <form action="/keranjang/tambah/{{ p.id }}" method="post" style="flex:1">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <button class="btn btn-primary btn-block" type="submit">Tambah ke Keranjang</button>
+  </form>
+</div>
+{% endif %}
+{% endblock %}

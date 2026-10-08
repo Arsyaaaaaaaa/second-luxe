@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Blog: Panduan Barang Branded Preloved | Second Luxe{% endblock %}
+{% block meta_description %}Panduan mengenali barang branded asli, merawat tas kulit, memilih ukuran sepatu, dan tips belanja preloved dari tim Second Luxe.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Blog</h1><p class="muted">Panduan dan cerita dari tim autentikasi kami.</p></div>
+  {% if cats %}
+  <div class="chips mb-2">
+    <a class="chip{{ ' is-active' if not cat }}" href="/blog">Semua</a>
+    {% for c in cats %}<a class="chip{{ ' is-active' if c == cat }}" href="/blog?kategori={{ c|urlencode }}">{{ c }}</a>{% endfor %}
+  </div>
+  {% endif %}
+  {% if posts %}
+  <div class="blog-grid">
+    {% for p in posts %}
+    <article class="post-card">
+      <p class="card-brand">{{ p.category }} &middot; {{ p.created_at|tanggal }}</p>
+      <h3><a href="/blog/{{ p.slug }}">{{ p.title }}</a></h3>
+      <p class="muted">{{ p.excerpt }}</p>
+      <a class="link-arrow" href="/blog/{{ p.slug }}">Baca artikel</a>
+    </article>
+    {% endfor %}
+  </div>
+  {% if pages > 1 %}
+  <nav class="pagination" aria-label="Halaman blog">
+    {% if page > 1 %}<a href="/blog{{ qs(hal=page-1) }}" rel="prev">Sebelumnya</a>{% endif %}
+    <span class="current" aria-current="page">{{ page }} / {{ pages }}</span>
+    {% if page < pages %}<a href="/blog{{ qs(hal=page+1) }}" rel="next">Berikutnya</a>{% endif %}
+  </nav>
+  {% endif %}
+  {% else %}
+  <div class="empty"><h2>Belum ada artikel</h2><a class="btn btn-primary" href="/blog">Lihat semua</a></div>
+  {% endif %}
+</div>
+{% endblock %}

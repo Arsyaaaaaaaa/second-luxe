@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Masuk | Second Luxe{% endblock %}
+{% block meta_description %}Masuk ke akun Second Luxe untuk melihat pesanan, wishlist, dan tawaran harga.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="form-card form-narrow">
+    <h1 class="h-form">Masuk</h1>
+    <p class="muted small">Belum punya akun? <a href="/daftar?next={{ next|urlencode }}">Daftar sekarang</a></p>
+
+    <form action="/masuk" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="next" value="{{ next }}">
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" value="{{ email }}" autocomplete="email" required autofocus>
+      </div>
+      <div class="field">
+        <label for="password">Kata sandi</label>
+        <input id="password" name="password" type="password" autocomplete="current-password" required>
+      </div>
+      <button class="btn btn-primary btn-block" type="submit">Masuk</button>
+    </form>
+
+    <div class="auth-divider"><span>atau</span></div>
+    <a class="btn btn-outline btn-block" href="/masuk/google?next={{ next|urlencode }}">Lanjutkan dengan Google (simulasi)</a>
+
+    <p class="small muted mt-2 mb-0">Akun demo: <code>user@secondluxe.com</code> / <code>user123</code></p>
+  </div>
+</div>
+{% endblock %}

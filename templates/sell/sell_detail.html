@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ s.brand }} {{ s.item_name }} | Jual ke Kami{% endblock %}
+{% block meta_description %}Detail pengajuan Jual ke Kami.{% endblock %}
+{% block head_extra %}<meta name="robots" content="noindex">{% endblock %}
+{% set label = {'pending':'Menunggu penilaian','offered':'Penawaran final','accepted':'Disetujui','rejected':'Ditolak'} %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>{{ s.brand }} {{ s.item_name }}</h1><span class="status status-{{ s.status }}">{{ label[s.status] }}</span></div>
+  <div class="account-layout">
+    {% include "account/_nav.html" %}
+    <div class="stack">
+      {% if photos %}<div class="photo-grid">{% for ph in photos %}<img src="{{ ph }}" alt="Foto {{ loop.index }} {{ s.item_name }}" loading="lazy" width="200" height="200">{% endfor %}</div>{% endif %}
+
+      <div class="form-card">
+        <table class="spec-table">
+          <tr><th scope="row">Brand</th><td>{{ s.brand }}</td></tr>
+          <tr><th scope="row">Barang</th><td>{{ s.item_name }}</td></tr>
+          <tr><th scope="row">Kondisi</th><td>{{ s.condition_desc }}</td></tr>
+          <tr><th scope="row">Harga harapan</th><td>{{ s.expected_price|rupiah }}</td></tr>
+          {% if s.description %}<tr><th scope="row">Keterangan</th><td>{{ s.description }}</td></tr>{% endif %}
+        </table>
+      </div>
+
+      {% if s.ai_min %}
+      <div class="ai-summary">
+        <strong>Estimasi awal</strong>
+        <p class="price-lg mb-1">{{ s.ai_min|rupiah }} &ndash; {{ s.ai_max|rupiah }}</p>
+        <p class="small mb-0">{{ s.ai_notes }}</p>
+      </div>
+      {% endif %}
+
+      {% if s.status == 'offered' %}
+      <div class="form-card">
+        <h2 class="h-card">Penawaran final dari tim kami</h2>
+        <p class="price-lg">{{ s.final_offer|rupiah }}</p>
+        {% if s.admin_note %}<p class="small muted">Catatan: {{ s.admin_note }}</p>{% endif %}
+        <div class="cluster">
+          <form action="/akun/jual/{{ s.id }}/respon" method="post" data-confirm="Terima penawaran {{ s.final_offer|rupiah }}?">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="aksi" value="terima">
+            <button class="btn btn-primary" type="submit">Terima penawaran</button></form>
+          <form action="/akun/jual/{{ s.id }}/respon" method="post" data-confirm="Tolak penawaran ini?">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="aksi" value="tolak">
+            <button class="btn btn-outline" type="submit">Tolak</button></form>
+        </div>
+      </div>
+      {% elif s.status == 'pending' %}
+      <p class="muted">Tim kami sedang memeriksa pengajuanmu. Penawaran final biasanya keluar dalam 1x24 jam, dan kamu akan mendapat notifikasi.</p>
+      {% elif s.status == 'accepted' %}
+      <p class="flash flash-success">Penawaran {{ s.final_offer|rupiah }} disetujui. Tim kami akan menghubungimu untuk pengiriman barang.</p>
+      {% endif %}
+      <p><a class="link-arrow" href="/akun/jual">Kembali ke daftar pengajuan</a></p>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% from "partials/product_card.html" import card with context %}
+
+{% block title %}Second Luxe: Tas, Sepatu & Pakaian Branded Preloved Terverifikasi{% endblock %}
+
+{% block content %}
+{% set hero = banners[0] if banners else none %}
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <h1 class="hero-title">{{ hero.title if hero else 'Barang branded, riwayat jelas.' }}</h1>
+      <p class="hero-sub">{{ hero.subtitle if hero else 'Setiap produk dicek tim autentikasi dan dijelaskan apa adanya.' }}</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="{{ hero.cta_url if hero else '/katalog' }}">{{ hero.cta_text if hero else 'Lihat koleksi' }}</a>
+        <a class="btn btn-outline" href="/autentikasi">Cara kami memverifikasi</a>
+      </div>
+    </div>
+    {% if hero_imgs %}
+    <div class="hero-collage" aria-hidden="true">
+      {% for img in hero_imgs %}<img src="{{ img }}" alt="" width="400" height="500" class="collage-{{ loop.index }}">{% endfor %}
+    </div>
+    {% endif %}
+  </div>
+</section>
+
+<section class="trust-strip" aria-label="Jaminan Second Luxe">
+  <div class="container trust-grid">
+    <div class="trust-item">{{ icon('shield', 26) }}<div><strong>Authenticity Verified</strong><span>Sertifikat digital di setiap produk</span></div></div>
+    <div class="trust-item">{{ icon('refund', 26) }}<div><strong>Garansi Uang Kembali</strong><span>Jika terbukti tidak asli</span></div></div>
+    <div class="trust-item">{{ icon('return', 26) }}<div><strong>Retur 7 Hari</strong><span>Syarat dan ketentuan berlaku</span></div></div>
+  </div>
+</section>
+
+<section class="section-tight">
+  <div class="container">
+    <div class="cat-grid">
+      {% for c in cats %}
+      <a class="cat-tile" href="/katalog?kategori={{ c.slug }}">
+        {% if c.image_url %}<img src="{{ c.image_url }}" alt="" loading="lazy" width="400" height="500">{% endif %}
+        <span class="cat-label"><strong>{{ c.name }}</strong><small>{{ c.total }} produk</small></span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>Produk terbaru</h2>
+      <a class="link-arrow" href="/katalog?urut=terbaru">Lihat semua {{ icon('arrow', 16) }}</a>
+    </div>
+    <div class="product-grid">{% for p in latest %}{{ card(p) }}{% endfor %}</div>
+  </div>
+</section>
+
+{% if banners|length > 2 %}
+<section class="container promo-grid">
+  {% for b in banners[1:3] %}
+  <div class="banner banner-{{ b.tone }}">
+    <h2>{{ b.title }}</h2>
+    <p class="{{ '' if b.tone == 'ink' else 'muted' }}">{{ b.subtitle }}</p>
+    <a class="btn btn-primary" href="{{ b.cta_url }}">{{ b.cta_text }}</a>
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+{% if featured %}
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <h2>Koleksi pilihan</h2>
+      <a class="link-arrow" href="/katalog?kondisi=9">Kondisi 9/10 ke atas {{ icon('arrow', 16) }}</a>
+    </div>
+    <div class="product-grid">{% for p in featured %}{{ card(p) }}{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+{% if popular %}
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <h2>Paling diminati</h2>
+      <a class="link-arrow" href="/katalog?urut=terpopuler">Lihat semua {{ icon('arrow', 16) }}</a>
+    </div>
+    <div class="product-grid">{% for p in popular %}{{ card(p) }}{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section">
+  <div class="container">
+    <div class="banner banner-ink sell-cta">
+      <h2>Punya barang branded yang jarang dipakai?</h2>
+      <p>Kirim foto dan detailnya. Anda mendapat estimasi harga awal, lalu penawaran final dari tim kami.</p>
+      <a class="btn btn-primary" href="/jual">Jual ke kami</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

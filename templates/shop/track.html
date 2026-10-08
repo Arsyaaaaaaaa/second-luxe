@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Lacak Pesanan | Second Luxe{% endblock %}
+{% block meta_description %}Lacak status pesanan Second Luxe dengan nomor pesanan dan email.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Lacak pesanan</h1><p class="muted">Masukkan nomor pesanan dan email yang dipakai saat checkout.</p></div>
+  <form class="form-card track-form" action="/lacak" method="get">
+    <div class="form-row">
+      <div class="field"><label for="no">Nomor pesanan</label><input id="no" name="no" type="text" value="{{ no }}" placeholder="SL-20261008-0001" maxlength="30" required></div>
+      <div class="field"><label for="email">Email</label><input id="email" name="email" type="email" value="{{ email }}" maxlength="254" required></div>
+    </div>
+    <button class="btn btn-primary" type="submit">Lacak</button>
+  </form>
+
+  {% if order %}
+  <div class="form-card mt-3">
+    {% include "partials/order_detail.html" %}
+    {% if order.status == 'menunggu_pembayaran' %}<a class="btn btn-primary mt-2" href="/bayar/{{ order.order_no }}">Lanjutkan pembayaran</a>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

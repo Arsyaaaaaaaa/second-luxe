@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}Tawar {{ p.brand_name }} {{ p.name }} | Second Luxe{% endblock %}
+{% block meta_description %}Ajukan tawaran harga untuk {{ p.brand_name }} {{ p.name }} di Second Luxe.{% endblock %}
+{% block head_extra %}<meta name="robots" content="noindex">{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumb" aria-label="Breadcrumb"><ol>
+    <li><a href="/">Beranda</a></li><li><a href="/produk/{{ p.slug }}">{{ p.name }}</a></li><li>Tawar harga</li>
+  </ol></nav>
+  <div class="page-head"><h1>Tawar harga</h1><p class="muted">Admin menjawab maksimal 1x24 jam. Jika diterima, produk ditahan 24 jam dengan harga kesepakatan.</p></div>
+
+  <div class="offer-layout">
+    <form class="form-card" action="/tawar/{{ p.id }}" method="post" novalidate>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="field">
+        <label for="amount">Tawaranmu (Rupiah)</label>
+        <div class="amount-input"><span aria-hidden="true">Rp</span>
+          <input id="amount" name="amount" type="text" inputmode="numeric" autocomplete="off" required
+                 value="{{ form.amount }}" placeholder="{{ min_amount }}" maxlength="20"
+                 data-price="{{ p.price }}" data-min="{{ min_amount }}">
+        </div>
+        <p class="hint" data-offer-hint>Minimal {{ min_amount|rupiah }} (60% dari harga).</p>
+      </div>
+      <div class="field">
+        <label for="message">Pesan untuk admin (opsional)</label>
+        <textarea id="message" name="message" rows="3" maxlength="300" placeholder="Contoh: bisa COD atau kurang sedikit?">{{ form.message }}</textarea>
+      </div>
+      <button class="btn btn-primary" type="submit">Kirim tawaran</button>
+    </form>
+
+    <aside class="summary" aria-label="Produk yang ditawar">
+      <ul class="mini-items">
+        <li><img src="{{ p.image_url or '/placeholder/%d.svg' % p.id }}" alt="" width="48" height="60">
+          <span><strong>{{ p.brand_name }}</strong><br>{{ p.name }}</span><span></span></li>
+      </ul>
+      <div class="summary-row"><span>Harga saat ini</span><strong>{{ p.price|rupiah }}</strong></div>
+      <div class="summary-row muted"><span>Kondisi</span><span>{{ p.condition_score }}/10</span></div>
+      {% if history %}
+      <h2 class="summary-title mt-2">Tawaranmu sebelumnya</h2>
+      {% for o in history %}
+      <div class="summary-row small"><span>{{ o.amount|rupiah }}</span><span class="status status-{{ o.status }}">{{ {'pending':'Menunggu','accepted':'Diterima','rejected':'Ditolak','countered':'Dibalas'}[o.status] }}</span></div>
+      {% endfor %}
+      {% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/forms.js') }}" defer></script>{% endblock %}

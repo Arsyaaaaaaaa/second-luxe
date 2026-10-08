@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Ubah' if editing else 'Tambah' }} Alamat | Second Luxe{% endblock %}
+{% block meta_description %}Form alamat pengiriman Second Luxe.{% endblock %}
+
+{% block content %}
+{% macro err(name) %}{% if errors.get(name) %}<p class="error" role="alert">{{ errors[name] }}</p>{% endif %}{% endmacro %}
+<div class="container">
+  <div class="page-head"><h1>{{ 'Ubah alamat' if editing else 'Tambah alamat' }}</h1></div>
+  <div class="account-layout">
+    {% include "account/_nav.html" %}
+    <form class="form-card" action="{{ '/akun/alamat/%d/edit' % aid if editing else '/akun/alamat/baru' }}" method="post">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="form-row">
+        <div class="field"><label for="label">Label</label><input id="label" name="label" type="text" value="{{ form.label }}" maxlength="30" placeholder="Rumah, Kantor"></div>
+        <div class="field"><label for="recipient">Nama penerima</label><input id="recipient" name="recipient" type="text" value="{{ form.recipient }}" maxlength="80" required>{{ err('recipient') }}</div>
+      </div>
+      <div class="field"><label for="phone">Nomor HP</label><input id="phone" name="phone" type="tel" value="{{ form.phone }}" placeholder="081234567890" required>{{ err('phone') }}</div>
+      <div class="field"><label for="street">Alamat lengkap</label><textarea id="street" name="street" rows="2" maxlength="200" required>{{ form.street }}</textarea>{{ err('street') }}</div>
+      <div class="form-row">
+        <div class="field"><label for="city">Kota / Kabupaten</label><input id="city" name="city" type="text" value="{{ form.city }}" maxlength="60" required>{{ err('city') }}</div>
+        <div class="field"><label for="province">Provinsi</label>
+          <select id="province" name="province" required>
+            <option value="">Pilih provinsi</option>
+            {% for pv in provinces %}<option value="{{ pv }}" {{ 'selected' if form.province == pv }}>{{ pv }}</option>{% endfor %}
+          </select>{{ err('province') }}</div>
+      </div>
+      <div class="field" style="max-width:200px"><label for="postal_code">Kode pos</label><input id="postal_code" name="postal_code" type="text" inputmode="numeric" maxlength="5" pattern="\d{5}" value="{{ form.postal_code }}" required>{{ err('postal_code') }}</div>
+      <label class="check mb-2"><input type="checkbox" name="is_default" value="1" {{ 'checked' if form.is_default }}> Jadikan alamat utama</label>
+      <div class="cluster"><button class="btn btn-primary" type="submit">Simpan alamat</button><a class="btn btn-ghost" href="/akun/alamat">Batal</a></div>
+    </form>
+  </div>
+</div>
+{% endblock %}

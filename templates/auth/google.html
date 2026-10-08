@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Masuk dengan Google (simulasi) | Second Luxe{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="form-card form-narrow">
+    <h1 class="h-form">Pilih akun Google</h1>
+    <p class="flash flash-info small">Ini halaman <strong>simulasi</strong> untuk demo. Tidak ada koneksi ke Google. Panduan mengaktifkan OAuth asli ada di README.</p>
+    <form action="/masuk/google" method="post" class="choice-grid">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="next" value="{{ next }}">
+      {% for a in accounts %}
+      <button class="choice google-choice" type="submit" name="akun" value="{{ loop.index0 }}">
+        <span class="avatar" aria-hidden="true">{{ a.name[0] }}</span>
+        <div><strong>{{ a.name }}</strong><span>{{ a.email }}</span></div>
+      </button>
+      {% endfor %}
+    </form>
+    <p class="small mt-2 mb-0"><a href="/masuk?next={{ next|urlencode }}">Kembali ke halaman masuk</a></p>
+  </div>
+</div>
+{% endblock %}

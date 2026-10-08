@@ -1,0 +1,15 @@
+<aside class="admin-side">
+  <div class="admin-brand">Second Luxe <span>Admin</span></div>
+  <nav>
+    <a class="{{ 'is-active' if active=='dashboard' else '' }}" href="/admin">Dashboard</a>
+    <a class="{{ 'is-active' if active=='products' else '' }}" href="/admin/produk">Produk</a>
+    <a class="{{ 'is-active' if active=='orders' else '' }}" href="/admin/pesanan">Pesanan</a>
+    <a class="{{ 'is-active' if active=='users' else '' }}" href="/admin/pengguna">Pengguna</a>
+    <a class="{{ 'is-active' if active=='reviews' else '' }}" href="/admin/ulasan">Ulasan</a>
+    <a class="{{ 'is-active' if active=='offers' else '' }}" href="/admin/tawaran">Tawar Harga</a>
+    <a class="{{ 'is-active' if active=='sell' else '' }}" href="/admin/jual">Jual ke Kami</a>
+    <a class="{{ 'is-active' if active=='master' else '' }}" href="/admin/master">Data Konten</a>
+    <a class="{{ 'is-active' if active=='guide' else '' }}" href="/admin/panduan">Panduan Admin</a>
+    <a href="/">← Lihat Website</a>
+  </nav>
+</aside>

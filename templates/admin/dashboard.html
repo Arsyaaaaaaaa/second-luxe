@@ -1,0 +1,17 @@
+{% extends "admin/base.html" %}
+{% block title %}Dashboard Admin — Second Luxe{% endblock %}
+{% block admin_content %}
+<div class="admin-head"><div><p class="eyebrow">Panel Admin</p><h1>Dashboard</h1><p class="muted">Pantau penjualan, katalog, dan aktivitas toko.</p></div><a class="btn btn-primary" href="/admin/produk">+ Tambah Produk</a></div>
+<div class="admin-stats">
+  <div class="admin-stat"><span>Produk</span><strong>{{ total_products }}</strong><small>{{ available }} tersedia</small></div>
+  <div class="admin-stat"><span>Pesanan</span><strong>{{ orders }}</strong><small>semua status</small></div>
+  <div class="admin-stat"><span>Pendapatan</span><strong>{{ revenue|rupiah }}</strong><small>pembayaran berhasil</small></div>
+  <div class="admin-stat"><span>Pengunjung</span><strong>{{ visitors }}</strong><small>session unik</small></div>
+</div>
+<div class="admin-grid-3">
+  <section class="admin-card"><h2>Perlu ditangani</h2><div class="admin-alert-list"><a href="/admin/tawaran"><b>{{ pending_offers }}</b><span>Tawaran menunggu</span></a><a href="/admin/jual"><b>{{ pending_sells }}</b><span>Jual ke Kami</span></a><a href="/admin/ulasan"><b>{{ pending_reviews }}</b><span>Ulasan moderasi</span></a></div></section>
+  <section class="admin-card admin-chart"><div class="admin-card-head"><h2>Penjualan 7 hari</h2><span class="muted">dibayar</span></div><div class="bars">{% for d in days %}<div class="bar-wrap"><div class="bar" style="height:{{ d.height }}%" title="{{ d.total|rupiah }}"></div><small>{{ d.date }}</small></div>{% endfor %}</div><div class="chart-note">Total 7 hari: <b>{{ days|sum(attribute='total')|rupiah }}</b></div></section>
+  <section class="admin-card"><h2>Produk terlaris</h2><ol class="admin-top-products">{% for p in top %}<li><span>{{ p.brand }} — {{ p.name }}</span><b>{{ p.sold_count }} terjual</b><small>{{ p.views }} views</small></li>{% else %}<li>Belum ada data.</li>{% endfor %}</ol></section>
+</div>
+<div class="admin-card"><div class="admin-card-head"><h2>Akses cepat</h2></div><div class="admin-quick"><a href="/admin/produk">Kelola Produk</a><a href="/admin/pesanan">Kelola Pesanan</a><a href="/admin/master">Brand, kategori, voucher, banner & blog</a><a href="/admin/laporan.csv">Unduh Laporan CSV</a></div></div>
+{% endblock %}

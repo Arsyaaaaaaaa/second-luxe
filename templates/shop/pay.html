@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Pembayaran {{ order.order_no }} | Second Luxe{% endblock %}
+{% block meta_description %}Selesaikan pembayaran pesanan Second Luxe (simulasi).{% endblock %}
+
+{% block content %}
+{% macro err(name) %}{% if errors.get(name) %}<p class="error" role="alert">{{ errors[name] }}</p>{% endif %}{% endmacro %}
+<div class="container">
+  <ol class="steps" aria-label="Langkah pembelian">
+    <li class="is-done">1. Keranjang</li><li class="is-done">2. Pengiriman</li><li class="is-current">3. Pembayaran</li><li>4. Selesai</li>
+  </ol>
+  <div class="page-head" style="padding-top:0">
+    <h1>Pembayaran</h1>
+    <p class="muted">Pesanan <strong>{{ order.order_no }}</strong> <span class="status status-{{ order.status }}">{{ order.status|status_label }}</span></p>
+  </div>
+
+  <div class="checkout-layout">
+    <div class="stack">
+      {% if not pending %}
+      <section class="form-card"><p class="mb-1">Pesanan ini sudah <strong>{{ order.status|status_label|lower }}</strong> dan tidak bisa dibayar lagi.</p><a class="btn btn-primary" href="/katalog">Kembali belanja</a></section>
+      {% else %}
+      <section class="form-card">
+        <h2 class="h-card">{{ order.payment_method }}</h2>
+        <p class="flash flash-info small">Ini <strong>simulasi</strong>. Tekan tombol bayar untuk menganggap pembayaran berhasil.</p>
+
+        {% if meta.key == 'transfer' %}
+          <p class="small muted mb-0">Nomor virtual account (contoh)</p>
+          <p class="va-number">{{ meta.va }}</p>
+          <p class="small muted">Bank: BCA / Mandiri / BNI. Jumlah transfer: <strong>{{ order.total|rupiah }}</strong></p>
+        {% elif meta.key == 'ewallet' %}
+          <p>Kamu akan diarahkan ke aplikasi e-wallet (GoPay, OVO, DANA, ShopeePay) untuk membayar <strong>{{ order.total|rupiah }}</strong>. Pada simulasi ini cukup tekan tombol bayar.</p>
+        {% elif meta.key == 'qris' %}
+          <div class="qr-box"><img src="/qris/{{ order.order_no }}.svg" alt="QR dummy untuk simulasi pembayaran" width="196" height="196"></div>
+          <p class="small muted text-center">QR dummy, bukan QRIS asli. Total <strong>{{ order.total|rupiah }}</strong></p>
+        {% else %}
+          {% if meta.monthly %}<p class="mb-1">Cicilan {{ order.installment_months }} bulan x <strong>{{ meta.monthly|rupiah }}</strong> (bunga 0%).</p>{% endif %}
+          <p class="small muted">Kartu uji untuk demo: <code>4242 4242 4242 4242</code>, masa berlaku bebas di masa depan, CVV 3 angka. Data kartu hanya diperiksa formatnya dan tidak disimpan.</p>
+        {% endif %}
+
+        <form action="/bayar/{{ order.order_no }}" method="post" id="pay-form" autocomplete="off">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          {% if meta.info.card %}
+          <div class="field">
+            <label for="card_name">Nama pada kartu</label>
+            <input id="card_name" name="card_name" type="text" maxlength="60" autocomplete="off" required>
+            {{ err('card_name') }}
+          </div>
+          <div class="field">
+            <label for="card_number">Nomor kartu</label>
+            <input id="card_number" name="card_number" type="text" inputmode="numeric" maxlength="23" placeholder="4242 4242 4242 4242" autocomplete="off" required>
+            {{ err('card_number') }}
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="card_exp">Berlaku hingga (BB/TT)</label>
+              <input id="card_exp" name="card_exp" type="text" inputmode="numeric" maxlength="5" placeholder="12/30" autocomplete="off" required>
+              {{ err('card_exp') }}
+            </div>
+            <div class="field">
+              <label for="card_cvv">CVV</label>
+              <input id="card_cvv" name="card_cvv" type="password" inputmode="numeric" maxlength="4" autocomplete="off" required>
+              {{ err('card_cvv') }}
+            </div>
+          </div>
+          {% endif %}
+          <button class="btn btn-primary btn-block" type="submit" name="aksi" value="bayar">Bayar {{ order.total|rupiah }} (simulasi)</button>
+        </form>
+        <form action="/bayar/{{ order.order_no }}" method="post" class="mt-1" data-confirm="Batalkan pesanan ini?">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button class="btn btn-ghost btn-block btn-sm" type="submit" name="aksi" value="batal">Batalkan pesanan</button>
+        </form>
+      </section>
+      {% endif %}
+    </div>
+
+    <aside class="summary" aria-label="Ringkasan pesanan">
+      <h2 class="summary-title">Pesanan</h2>
+      <ul class="mini-items">
+        {% for i in items %}
+        <li><img src="{{ i.image_url or '/placeholder/%d.svg' % i.product_id }}" alt="" width="48" height="60" loading="lazy"><span>{{ i.product_name }}</span><strong>{{ i.price|rupiah }}</strong></li>
+        {% endfor %}
+      </ul>
+      <div class="summary-row"><span>Subtotal</span><span>{{ order.subtotal|rupiah }}</span></div>
+      {% if order.discount %}<div class="summary-row"><span>Diskon {{ order.voucher_code }}</span><span class="verified-text">-{{ order.discount|rupiah }}</span></div>{% endif %}
+      <div class="summary-row"><span>Ongkir ({{ order.courier }})</span><span>{{ order.shipping_cost|rupiah }}</span></div>
+      <div class="summary-row summary-total"><span>Total</span><span>{{ order.total|rupiah }}</span></div>
+      <p class="small muted mt-2 mb-0">Dikirim ke {{ order.recipient }}, {{ order.city }}, {{ order.province }}.</p>
+    </aside>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}<script src="{{ url_for('static', filename='js/checkout.js') }}" defer></script>{% endblock %}

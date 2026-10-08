@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Tawaran &amp; Booking | Second Luxe{% endblock %}
+{% block meta_description %}Pantau tawaran harga dan booking 24 jam kamu di Second Luxe.{% endblock %}
+{% set label = {'pending':'Menunggu jawaban','accepted':'Diterima','rejected':'Ditolak','countered':'Dibalas admin'} %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Tawaran &amp; booking</h1></div>
+  <div class="account-layout">
+    {% include "account/_nav.html" %}
+    <div class="stack">
+
+      <section aria-labelledby="h-booking">
+        <h2 class="h-card" id="h-booking">Booking aktif</h2>
+        {% if holds %}
+        {% for h in holds %}
+        <article class="order-card">
+          <div class="offer-row">
+            <img src="{{ h.image_url or '/placeholder/%d.svg' % h.product_id }}" alt="" width="64" height="80">
+            <div>
+              <p class="card-brand mb-0">{{ h.brand }}</p>
+              <a href="/produk/{{ h.slug }}"><strong>{{ h.name }}</strong></a>
+              <p class="small muted mb-0">Sisa waktu {{ h.left }} &middot; {{ h.price|rupiah }}</p>
+            </div>
+          </div>
+          <div class="cluster mt-1">
+            <a class="btn btn-primary btn-sm" href="/keranjang">Lanjut bayar</a>
+            <form action="/akun/booking/{{ h.id }}/batal" method="post" data-confirm="Batalkan booking ini?">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button class="btn btn-outline btn-sm" type="submit">Batalkan</button>
+            </form>
+          </div>
+        </article>
+        {% endfor %}
+        {% else %}
+        <p class="muted small">Belum ada booking. Tekan <em>Booking 24 Jam</em> di halaman produk untuk menahan barang tanpa biaya.</p>
+        {% endif %}
+      </section>
+
+      <section aria-labelledby="h-offer">
+        <h2 class="h-card" id="h-offer">Tawaran harga</h2>
+        {% if offers %}
+        {% for o in offers %}
+        <article class="order-card">
+          <div class="order-head">
+            <div class="offer-row">
+              <img src="{{ o.image_url or '/placeholder/%d.svg' % o.product_id }}" alt="" width="64" height="80">
+              <div>
+                <p class="card-brand mb-0">{{ o.brand }}</p>
+                <a href="/produk/{{ o.slug }}"><strong>{{ o.name }}</strong></a>
+                <p class="small muted mb-0">Harga {{ o.price|rupiah }} &middot; {{ o.created_at|tanggal }}</p>
+              </div>
+            </div>
+            <span class="status status-{{ o.status }}">{{ label[o.status] }}</span>
+          </div>
+          <p class="mb-1">Tawaranmu: <strong>{{ o.amount|rupiah }}</strong>
+            {% if o.status == 'countered' %} &middot; Balasan admin: <strong>{{ o.counter_amount|rupiah }}</strong>{% endif %}</p>
+          {% if o.admin_note %}<p class="small muted">Catatan admin: {{ o.admin_note }}</p>{% endif %}
+
+          {% if o.status == 'pending' %}
+          <form action="/akun/tawaran/{{ o.id }}/respon" method="post" data-confirm="Tarik tawaran ini?">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="aksi" value="tarik">
+            <button class="btn btn-ghost btn-sm" type="submit">Tarik tawaran</button>
+          </form>
+          {% elif o.status == 'countered' %}
+          <div class="cluster">
+            <form action="/akun/tawaran/{{ o.id }}/respon" method="post">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="aksi" value="terima">
+              <button class="btn btn-primary btn-sm" type="submit">Terima {{ o.counter_amount|rupiah }}</button>
+            </form>
+            <form action="/akun/tawaran/{{ o.id }}/respon" method="post">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}"><input type="hidden" name="aksi" value="tolak">
+              <button class="btn btn-outline btn-sm" type="submit">Tolak</button>
+            </form>
+          </div>
+          {% elif o.status == 'accepted' %}
+            {% if o.hold_until %}
+            <form action="/akun/tawaran/{{ o.id }}/beli" method="post" class="cluster">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button class="btn btn-primary btn-sm" type="submit">Checkout {{ o.amount|rupiah }}</button>
+              <span class="small muted">Ditahan, sisa {{ time_left(o.hold_until) }}</span>
+            </form>
+            {% elif o.pstatus == 'sold' %}<p class="small muted mb-0">Produk sudah terjual.</p>
+            {% else %}<p class="small sale-text mb-0">Waktu penahanan habis, harga kesepakatan tidak berlaku lagi.</p>{% endif %}
+          {% endif %}
+        </article>
+        {% endfor %}
+        {% else %}
+        <div class="empty"><h2>Belum ada tawaran</h2><p class="muted">Suka produknya tapi harganya kurang pas? Coba tawar.</p><a class="btn btn-primary" href="/katalog">Jelajahi produk</a></div>
+        {% endif %}
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

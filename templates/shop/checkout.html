@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+{% block title %}Checkout | Second Luxe{% endblock %}
+{% block meta_description %}Selesaikan pesanan di Second Luxe: alamat, kurir, voucher, dan metode pembayaran.{% endblock %}
+
+{% block content %}
+{% macro err(name) %}{% if errors.get(name) %}<p class="error" role="alert">{{ errors[name] }}</p>{% endif %}{% endmacro %}
+<div class="container">
+  <ol class="steps" aria-label="Langkah pembelian">
+    <li class="is-done">1. Keranjang</li><li class="is-current">2. Pengiriman</li><li>3. Pembayaran</li><li>4. Selesai</li>
+  </ol>
+  <div class="page-head" style="padding-top:0"><h1>Checkout</h1></div>
+
+  <form action="/checkout" method="post" class="checkout-layout" id="checkout-form"
+        data-quote-url="/api/ongkir" data-voucher-url="/api/voucher"
+        data-subtotal="{{ subtotal }}" data-discount="{{ discount }}" data-shipping="{{ ship }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+
+    <div class="stack">
+      {# ---------- Kontak ---------- #}
+      <section class="form-card" aria-labelledby="h-kontak">
+        <h2 id="h-kontak" class="h-card">Kontak</h2>
+        {% if current_user %}
+          <p class="small muted mb-0">Konfirmasi pesanan dikirim ke <strong>{{ form.email }}</strong>.</p>
+        {% else %}
+          <div class="field mb-0">
+            <label for="email">Email untuk konfirmasi dan pelacakan</label>
+            <input id="email" name="email" type="email" value="{{ form.email }}" autocomplete="email" required>
+            {{ err('email') }}
+            <p class="hint">Checkout sebagai tamu. Sudah punya akun? <a href="/masuk?next=/checkout">Masuk</a></p>
+          </div>
+        {% endif %}
+      </section>
+
+      {# ---------- Alamat ---------- #}
+      <section class="form-card" aria-labelledby="h-alamat">
+        <h2 id="h-alamat" class="h-card">Alamat pengiriman</h2>
+        {% if addresses %}
+        <div class="field">
+          <label for="saved-address">Pilih dari buku alamat</label>
+          <select id="saved-address">
+            <option value="">Isi manual</option>
+            {% for a in addresses %}
+            <option value="{{ a.id }}" data-recipient="{{ a.recipient }}" data-phone="{{ a.phone }}" data-street="{{ a.street }}"
+                    data-city="{{ a.city }}" data-province="{{ a.province }}" data-postal="{{ a.postal_code }}">{{ a.label }}: {{ a.recipient }}, {{ a.city }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        {% endif %}
+        <div class="form-row">
+          <div class="field">
+            <label for="recipient">Nama penerima</label>
+            <input id="recipient" name="recipient" type="text" value="{{ form.recipient }}" maxlength="80" autocomplete="name" required>
+            {{ err('recipient') }}
+          </div>
+          <div class="field">
+            <label for="phone">Nomor HP</label>
+            <input id="phone" name="phone" type="tel" value="{{ form.phone }}" autocomplete="tel" placeholder="081234567890" required>
+            {{ err('phone') }}
+          </div>
+        </div>
+        <div class="field">
+          <label for="street">Alamat lengkap</label>
+          <textarea id="street" name="street" rows="2" maxlength="200" autocomplete="street-address" required>{{ form.street }}</textarea>
+          {{ err('street') }}
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="city">Kota / Kabupaten</label>
+            <input id="city" name="city" type="text" value="{{ form.city }}" maxlength="60" required>
+            {{ err('city') }}
+          </div>
+          <div class="field">
+            <label for="province">Provinsi</label>
+            <select id="province" name="province" required>
+              <option value="">Pilih provinsi</option>
+              {% for pv in provinces %}<option value="{{ pv }}" {{ 'selected' if form.province == pv }}>{{ pv }}</option>{% endfor %}
+            </select>
+            {{ err('province') }}
+          </div>
+        </div>
+        <div class="field" style="max-width:200px">
+          <label for="postal_code">Kode pos</label>
+          <input id="postal_code" name="postal_code" type="text" inputmode="numeric" maxlength="5" pattern="\d{5}" value="{{ form.postal_code }}" autocomplete="postal-code" required>
+          {{ err('postal_code') }}
+        </div>
+        {% if current_user %}
+        <label class="check"><input type="checkbox" name="save_address" value="1" {{ 'checked' if form.save_address }}> Simpan alamat ini ke buku alamat</label>
+        {% endif %}
+      </section>
+
+      {# ---------- Kurir ---------- #}
+      <section class="form-card" aria-labelledby="h-kurir">
+        <h2 id="h-kurir" class="h-card">Kurir pengiriman</h2>
+        <p class="small muted" id="courier-hint">{{ 'Ongkir simulasi berdasarkan provinsi tujuan.' if form.province else 'Pilih provinsi dulu untuk melihat ongkir.' }}</p>
+        <div class="choice-grid" id="courier-list">
+          {% for code, c in couriers.items() %}{% set q = quotes.get(code) %}
+          <label class="choice">
+            <input type="radio" name="courier" value="{{ code }}" data-cost="{{ q.cost if q else 0 }}" {{ 'checked' if form.courier == code and q }} {{ 'disabled' if not q }}>
+            <div><strong>{{ c.label }}</strong><span data-eta>{{ q.eta if q else 'Belum tersedia untuk provinsi ini' }}</span></div>
+            <span class="choice-price" data-cost-label>{{ q.cost|rupiah if q else '' }}</span>
+          </label>
+          {% endfor %}
+        </div>
+        {{ err('courier') }}
+      </section>
+
+      {# ---------- Voucher ---------- #}
+      <section class="form-card" aria-labelledby="h-voucher">
+        <h2 id="h-voucher" class="h-card">Voucher</h2>
+        <div class="voucher-row">
+          <label class="sr-only" for="voucher">Kode voucher</label>
+          <input id="voucher" name="voucher" type="text" value="{{ form.voucher }}" placeholder="Contoh: WELCOME10" maxlength="30" autocomplete="off" style="text-transform:uppercase">
+          <button class="btn btn-outline" type="button" id="voucher-apply">Pakai</button>
+        </div>
+        <p class="small mt-1 mb-0 {{ 'sale-text' if errors.get('voucher') else 'verified-text' if discount }}" id="voucher-msg" role="status">{{ errors.get('voucher') or ('Hemat ' ~ (discount|rupiah) ~ ' dengan voucher ' ~ form.voucher ~ '.' if discount) or '' }}</p>
+      </section>
+
+      {# ---------- Pembayaran ---------- #}
+      <section class="form-card" aria-labelledby="h-bayar">
+        <h2 id="h-bayar" class="h-card">Metode pembayaran</h2>
+        <p class="small muted">Pembayaran bersifat simulasi untuk demo. Tidak ada uang sungguhan dan data kartu tidak disimpan.</p>
+        <div class="choice-grid">
+          {% for key, m in payments.items() %}
+          <label class="choice">
+            <input type="radio" name="payment" value="{{ key }}" data-months="{{ m.months }}" {{ 'checked' if form.payment == key }}>
+            <div><strong>{{ m.label }}</strong><span>{{ m.desc }}</span><span data-monthly class="verified-text"></span></div>
+          </label>
+          {% endfor %}
+        </div>
+        {{ err('payment') }}
+      </section>
+    </div>
+
+    {# ---------- Ringkasan ---------- #}
+    <aside class="summary" aria-label="Ringkasan pesanan">
+      <h2 class="summary-title">Ringkasan pesanan</h2>
+      <ul class="mini-items">
+        {% for i in items %}
+        <li><img src="{{ i.p.image_url or '/placeholder/%d.svg' % i.p.id }}" alt="" width="48" height="60" loading="lazy">
+          <span><small class="muted">{{ i.p.brand_name }}</small><br>{{ i.p.name }}</span><strong>{{ i.p.price|rupiah }}</strong></li>
+        {% endfor %}
+      </ul>
+      <div class="summary-row"><span>Subtotal</span><span id="sum-subtotal">{{ subtotal|rupiah }}</span></div>
+      <div class="summary-row"><span>Diskon voucher</span><span id="sum-discount" class="verified-text">{{ ('-' ~ (discount|rupiah)) if discount else 'Rp 0' }}</span></div>
+      <div class="summary-row"><span>Ongkir</span><span id="sum-shipping">{{ ship|rupiah if ship else 'Pilih kurir' }}</span></div>
+      <div class="summary-row summary-total"><span>Total</span><span id="sum-total">{{ total|rupiah }}</span></div>
+      <button class="btn btn-primary btn-block mt-2" type="submit">Buat Pesanan dan Bayar</button>
+      <p class="small muted mt-2 mb-0">Produk baru dinyatakan terjual setelah pembayaran berhasil. Jika dibeli orang lain lebih dulu, pesananmu otomatis dibatalkan tanpa biaya.</p>
+    </aside>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}<script src="{{ url_for('static', filename='js/checkout.js') }}" defer></script>{% endblock %}

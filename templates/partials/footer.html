@@ -1,0 +1,64 @@
+{% from "partials/icons.html" import icon %}
+<footer class="site-footer">
+  <div class="container">
+    <div class="newsletter">
+      <div>
+        <h2 class="newsletter-title">Dapatkan koleksi baru lebih dulu</h2>
+        <p class="muted">Stok kami hanya satu per produk. Pelanggan newsletter melihat produk baru 24 jam sebelum tayang.</p>
+      </div>
+      <form action="/newsletter" method="post" class="newsletter-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <label class="sr-only" for="nl-email">Alamat email</label>
+        <input id="nl-email" type="email" name="email" placeholder="Alamat email Anda" required maxlength="120">
+        <button class="btn btn-primary" type="submit">Berlangganan</button>
+      </form>
+    </div>
+
+    <div class="footer-grid">
+      <div class="footer-about">
+        <a class="logo" href="/">Second Luxe</a>
+        <p class="muted">Toko preloved barang branded dengan autentikasi di setiap produk. Kondisi dijelaskan jujur, termasuk minusnya.</p>
+        <div class="social">
+          <a href="https://instagram.com/secondluxe" target="_blank" rel="noopener noreferrer" aria-label="Instagram Second Luxe">{{ icon('instagram', 22) }}</a>
+          <a href="https://tiktok.com/@secondluxe" target="_blank" rel="noopener noreferrer" aria-label="TikTok Second Luxe">{{ icon('tiktok', 22) }}</a>
+          <a href="https://youtube.com/@secondluxe" target="_blank" rel="noopener noreferrer" aria-label="YouTube Second Luxe">{{ icon('youtube', 22) }}</a>
+          <a href="https://wa.me/{{ whatsapp_number }}" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp Second Luxe">{{ icon('whatsapp', 22) }}</a>
+        </div>
+      </div>
+      <div>
+        <h3 class="footer-title">Belanja</h3>
+        <ul class="footer-links">
+          <li><a href="/katalog">Semua Produk</a></li>
+          <li><a href="/katalog?kategori=tas">Tas</a></li>
+          <li><a href="/katalog?kategori=pakaian">Pakaian</a></li>
+          <li><a href="/katalog?kategori=sepatu">Sepatu</a></li>
+          <li><a href="/katalog?kategori=aksesoris">Aksesoris</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="footer-title">Kepercayaan</h3>
+        <ul class="footer-links">
+          <li><a href="/autentikasi">Proses Autentikasi</a></li>
+          <li><a href="/garansi">Garansi Uang Kembali</a></li>
+          <li><a href="/retur">Kebijakan Retur</a></li>
+          <li><a href="/jual">Jual ke Kami</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3 class="footer-title">Bantuan</h3>
+        <ul class="footer-links">
+          <li><a href="/faq">FAQ</a></li>
+          <li><a href="/lacak">Lacak Pesanan</a></li>
+          <li><a href="/blog">Blog</a></li>
+          <li><a href="/tentang">Tentang Kami</a></li>
+          <li><a href="/kontak">Kontak</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2026 Second Luxe. Proyek UTS Generative AI.</p>
+      <p>Pembayaran pada situs ini adalah simulasi dan tidak memproses uang sungguhan.</p>
+    </div>
+  </div>
+</footer>

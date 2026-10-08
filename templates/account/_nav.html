@@ -1,0 +1,10 @@
+{# Navigasi samping area akun. Variabel: active #}
+<nav class="side-nav" aria-label="Menu akun">
+  <a href="/akun" class="{{ 'is-active' if active == 'profil' }}">Profil</a>
+  <a href="/akun/alamat" class="{{ 'is-active' if active == 'alamat' }}">Alamat</a>
+  <a href="/akun/pesanan" class="{{ 'is-active' if active == 'pesanan' }}">Pesanan</a>
+  <a href="/akun/notifikasi" class="{{ 'is-active' if active == 'notifikasi' }}">Notifikasi{% if unread_notif %} ({{ unread_notif }}){% endif %}</a>
+  <a href="/akun/tawaran" class="{{ 'is-active' if active == 'tawaran' }}">Tawaran &amp; Booking</a>
+  <a href="/akun/jual" class="{{ 'is-active' if active == 'jual' }}">Jual ke Kami</a>
+  <a href="/wishlist">Wishlist</a>
+</nav>

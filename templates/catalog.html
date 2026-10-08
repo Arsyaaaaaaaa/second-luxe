@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% from "partials/product_card.html" import card with context %}
+
+{% block title %}{{ heading }} | Second Luxe{% endblock %}
+{% block meta_description %}{{ total }} produk branded preloved terverifikasi: {{ heading }}. Filter menurut brand, ukuran, kondisi, dan harga.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/">Beranda</a></li><li>Katalog</li></ol></nav>
+  <div class="page-head">
+    <h1>{{ heading }}</h1>
+    <p class="muted">{{ total }} produk ditemukan</p>
+  </div>
+
+  <div class="catalog">
+    <aside class="filters is-collapsible" id="filters" aria-label="Filter produk">
+      <form method="get" action="/katalog">
+        <input type="hidden" name="urut" value="{{ f.urut }}">
+        {% if f.q %}<input type="hidden" name="q" value="{{ f.q }}">{% endif %}
+
+        <div class="filter-group">
+          <h3>Kategori</h3>
+          <div class="filter-list">
+            <label class="check"><input type="radio" name="kategori" value="" {{ 'checked' if not f.kategori }}> Semua</label>
+            {% for c in cats %}<label class="check"><input type="radio" name="kategori" value="{{ c.slug }}" {{ 'checked' if f.kategori == c.slug }}> {{ c.name }}</label>{% endfor %}
+          </div>
+        </div>
+        <div class="filter-group">
+          <h3>Brand</h3>
+          <div class="filter-list">
+            {% for b in brands %}<label class="check"><input type="checkbox" name="brand" value="{{ b.slug }}" {{ 'checked' if b.slug in f.brand }}> {{ b.name }} <span class="muted small">({{ b.n }})</span></label>{% endfor %}
+          </div>
+        </div>
+        <div class="filter-group">
+          <h3>Rentang harga (Rp)</h3>
+          <div class="range-row">
+            <label class="sr-only" for="harga_min">Harga minimum</label>
+            <input id="harga_min" type="number" name="harga_min" min="0" step="100000" placeholder="Minimum" value="{{ f.harga_min if f.harga_min is not none }}">
+            <label class="sr-only" for="harga_max">Harga maksimum</label>
+            <input id="harga_max" type="number" name="harga_max" min="0" step="100000" placeholder="Maksimum" value="{{ f.harga_max if f.harga_max is not none }}">
+          </div>
+        </div>
+        <div class="filter-group">
+          <h3>Ukuran</h3>
+          <div class="filter-list">
+            {% for s in sizes %}<label class="check"><input type="checkbox" name="ukuran" value="{{ s }}" {{ 'checked' if s in f.ukuran }}> {{ s }}</label>{% endfor %}
+          </div>
+        </div>
+        <div class="filter-group">
+          <h3>Warna</h3>
+          <div class="filter-list">
+            {% for c in colors %}<label class="check"><input type="checkbox" name="warna" value="{{ c }}" {{ 'checked' if c in f.warna }}> {{ c }}</label>{% endfor %}
+          </div>
+        </div>
+        <div class="filter-group">
+          <h3>Kondisi minimum</h3>
+          <label class="sr-only" for="kondisi">Kondisi minimum</label>
+          <select id="kondisi" name="kondisi">
+            <option value="">Semua kondisi</option>
+            {% for n in [9, 8, 7, 6] %}<option value="{{ n }}" {{ 'selected' if f.kondisi == n }}>{{ n }}/10 ke atas</option>{% endfor %}
+          </select>
+        </div>
+        <div class="filter-group">
+          <h3>Gender</h3>
+          <div class="filter-list">
+            <label class="check"><input type="radio" name="gender" value="" {{ 'checked' if not f.gender }}> Semua</label>
+            <label class="check"><input type="radio" name="gender" value="wanita" {{ 'checked' if f.gender == 'wanita' }}> Wanita</label>
+            <label class="check"><input type="radio" name="gender" value="pria" {{ 'checked' if f.gender == 'pria' }}> Pria</label>
+          </div>
+        </div>
+        <div class="cluster mt-2">
+          <button class="btn btn-primary" type="submit">Terapkan filter</button>
+          <a class="btn btn-ghost" href="/katalog">Atur ulang</a>
+        </div>
+      </form>
+    </aside>
+
+    <div>
+      <div class="catalog-bar">
+        <button class="btn btn-outline btn-sm filter-toggle" type="button" data-filter-toggle aria-expanded="false" aria-controls="filters">{{ icon('filter', 16) }} Filter</button>
+        <form method="get" action="/katalog" class="sort-form">
+          {% for k, vals in request.args.lists() if k not in ['urut', 'hal'] %}{% for v in vals %}<input type="hidden" name="{{ k }}" value="{{ v }}">{% endfor %}{% endfor %}
+          <label for="urut" class="small muted">Urutkan</label>
+          <select id="urut" name="urut" data-autosubmit>
+            {% for key, label in sorts.items() %}<option value="{{ key }}" {{ 'selected' if f.urut == key }}>{{ label }}</option>{% endfor %}
+          </select>
+        </form>
+      </div>
+
+      {% if chips %}
+      <div class="chips mb-2">
+        {% for label, url in chips %}<a class="chip is-active" href="/katalog{{ url }}" aria-label="Hapus filter {{ label }}">{{ label }} {{ icon('close', 12) }}</a>{% endfor %}
+      </div>
+      {% endif %}
+
+      {% if products %}
+      <div class="product-grid">{% for p in products %}{{ card(p) }}{% endfor %}</div>
+
+      {% if pages > 1 %}
+      <nav class="pagination" aria-label="Halaman">
+        {% if page > 1 %}<a href="/katalog{{ qs(hal=page - 1) }}" rel="prev" aria-label="Halaman sebelumnya">Sebelumnya</a>{% endif %}
+        {% for n in page_nums %}
+          {% if n is none %}<span class="disabled">&hellip;</span>
+          {% elif n == page %}<span class="current" aria-current="page">{{ n }}</span>
+          {% else %}<a href="/katalog{{ qs(hal=n) }}">{{ n }}</a>{% endif %}
+        {% endfor %}
+        {% if page < pages %}<a href="/katalog{{ qs(hal=page + 1) }}" rel="next" aria-label="Halaman berikutnya">Berikutnya</a>{% endif %}
+      </nav>
+      {% endif %}
+      {% else %}
+      <div class="empty">
+        <h2>Belum ada produk yang cocok</h2>
+        <p class="muted">Coba longgarkan filter atau gunakan kata kunci lain. Stok kami terus bertambah.</p>
+        <a class="btn btn-primary" href="/katalog">Atur ulang filter</a>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

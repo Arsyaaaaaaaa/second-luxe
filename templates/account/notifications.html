@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Notifikasi | Second Luxe{% endblock %}
+{% block meta_description %}Notifikasi harga turun, stok menipis, dan status pesanan Second Luxe.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Notifikasi</h1></div>
+  <div class="account-layout">
+    {% include "account/_nav.html" %}
+    <div>
+      {% if rows %}
+      <ul class="notif-list">
+        {% for n in rows %}
+        <li class="notif-item{% if not n.is_read %} is-unread{% endif %}">
+          <span class="notif-kind">{{ {'price_drop': 'Harga turun', 'low_stock': 'Stok menipis', 'order': 'Pesanan', 'offer': 'Tawar harga', 'sell': 'Jual ke Kami'}.get(n.kind, 'Info') }}</span>
+          <p class="mb-0">{% if n.url %}<a href="{{ n.url }}">{{ n.message }}</a>{% else %}{{ n.message }}{% endif %}</p>
+          <time class="small muted" datetime="{{ n.created_at }}">{{ n.created_at|tanggal }} {{ n.created_at[11:16] }} UTC</time>
+        </li>
+        {% endfor %}
+      </ul>
+      {% else %}
+      <div class="empty"><h2>Belum ada notifikasi</h2><p class="muted">Simpan produk ke wishlist agar kami kabari saat harganya turun atau stoknya tinggal sedikit.</p><a class="btn btn-primary" href="/katalog">Jelajahi produk</a></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Pesanan {{ order.order_no }} | Second Luxe{% endblock %}
+{% block meta_description %}Detail dan status pesanan Second Luxe.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <nav class="breadcrumb" aria-label="Breadcrumb"><ol><li><a href="/akun">Akun</a></li><li><a href="/akun/pesanan">Pesanan</a></li><li>{{ order.order_no }}</li></ol></nav>
+  <div class="account-layout" style="margin-top:1rem">
+    {% include "account/_nav.html" %}
+    <div class="form-card">
+      {% include "partials/order_detail.html" %}
+      <div class="cluster mt-2">
+        {% if order.status == 'menunggu_pembayaran' %}<a class="btn btn-primary" href="/bayar/{{ order.order_no }}">Lanjutkan pembayaran</a>{% endif %}
+        {% if order.status == 'dikirim' %}
+        <form action="/akun/pesanan/{{ order.order_no }}/selesai" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button class="btn btn-primary" type="submit">Pesanan sudah diterima</button>
+        </form>
+        {% endif %}
+        <a class="btn btn-outline" href="/retur">Kebijakan retur</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

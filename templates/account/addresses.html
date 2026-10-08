@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Buku Alamat | Second Luxe{% endblock %}
+{% block meta_description %}Kelola alamat pengiriman akun Second Luxe.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Buku alamat</h1></div>
+  <div class="account-layout">
+    {% include "account/_nav.html" %}
+    <div>
+      <div class="between flex mb-2" style="align-items:center">
+        <p class="muted mb-0">{{ rows|length }} dari {{ max_addresses }} alamat</p>
+        {% if rows|length < max_addresses %}<a class="btn btn-primary btn-sm" href="/akun/alamat/baru">Tambah alamat</a>{% endif %}
+      </div>
+      {% if rows %}
+      <div class="addr-grid">
+        {% for a in rows %}
+        <article class="addr-card{% if a.is_default %} is-default{% endif %}">
+          <p class="mb-1"><strong>{{ a.label }}</strong> {% if a.is_default %}<span class="badge badge-verified">Utama</span>{% endif %}</p>
+          <p class="small mb-1">{{ a.recipient }} &middot; {{ a.phone }}<br>{{ a.street }}<br>{{ a.city }}, {{ a.province }} {{ a.postal_code }}</p>
+          <div class="cluster">
+            <a class="btn btn-outline btn-sm" href="/akun/alamat/{{ a.id }}/edit">Ubah</a>
+            {% if not a.is_default %}
+            <form action="/akun/alamat/{{ a.id }}/utama" method="post"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="btn btn-ghost btn-sm" type="submit">Jadikan utama</button></form>
+            {% endif %}
+            <form action="/akun/alamat/{{ a.id }}/hapus" method="post" data-confirm="Hapus alamat ini?"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="btn btn-ghost btn-sm sale-text" type="submit">Hapus</button></form>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty"><h2>Belum ada alamat</h2><p class="muted">Simpan alamat agar checkout lebih cepat.</p><a class="btn btn-primary" href="/akun/alamat/baru">Tambah alamat</a></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

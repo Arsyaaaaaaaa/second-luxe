@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}Profil Saya | Second Luxe{% endblock %}
+{% block meta_description %}Kelola profil dan kata sandi akun Second Luxe.{% endblock %}
+
+{% block content %}
+{% macro err(name) %}{% if errors.get(name) %}<p class="error" role="alert">{{ errors[name] }}</p>{% endif %}{% endmacro %}
+<div class="container">
+  <div class="page-head"><h1>Akun saya</h1><p class="muted">Anggota sejak {{ u.created_at|tanggal }}</p></div>
+  <div class="account-layout">
+    {% include "account/_nav.html" %}
+    <div class="stack">
+      <section class="form-card">
+        <h2 class="h-card">Profil</h2>
+        <form action="/akun" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <div class="field"><label for="email">Email</label><input id="email" type="email" value="{{ u.email }}" disabled><p class="hint">Email tidak dapat diubah.</p></div>
+          <div class="form-row">
+            <div class="field"><label for="name">Nama lengkap</label><input id="name" name="name" type="text" value="{{ form.name }}" maxlength="80" required>{{ err('name') }}</div>
+            <div class="field"><label for="phone">Nomor HP</label><input id="phone" name="phone" type="tel" value="{{ form.phone }}" placeholder="081234567890">{{ err('phone') }}</div>
+          </div>
+          <button class="btn btn-primary" type="submit">Simpan profil</button>
+        </form>
+        <p class="small muted mt-2 mb-0">{{ stats.orders }} pesanan &middot; {{ stats.wishlist }} produk di wishlist</p>
+      </section>
+
+      <section class="form-card">
+        <h2 class="h-card">Ganti kata sandi</h2>
+        <form action="/akun/sandi" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <div class="field"><label for="current">Kata sandi saat ini</label><input id="current" name="current" type="password" autocomplete="current-password" required></div>
+          <div class="form-row">
+            <div class="field"><label for="new">Kata sandi baru</label><input id="new" name="new" type="password" autocomplete="new-password" minlength="8" required><p class="hint">Minimal 8 karakter, huruf dan angka.</p></div>
+            <div class="field"><label for="confirm">Ulangi kata sandi baru</label><input id="confirm" name="confirm" type="password" autocomplete="new-password" required></div>
+          </div>
+          <button class="btn btn-outline" type="submit">Ganti kata sandi</button>
+        </form>
+      </section>
+    </div>
+  </div>
+</div>
+{% endblock %}

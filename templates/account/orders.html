@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Pesanan Saya | Second Luxe{% endblock %}
+{% block meta_description %}Riwayat dan status pesanan Second Luxe.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Pesanan saya</h1></div>
+  <div class="account-layout">
+    {% include "account/_nav.html" %}
+    <div>
+      {% if rows %}
+      <div class="stack">
+        {% for o in rows %}
+        <article class="order-card">
+          <div class="order-head">
+            <div><strong>{{ o.order_no }}</strong><p class="small muted mb-0">{{ o.created_at|tanggal }} &middot; {{ o.n_items }} produk</p></div>
+            <span class="status status-{{ o.status }}">{{ o.status|status_label }}</span>
+          </div>
+          <p class="small mb-1">{{ o.names }}</p>
+          <div class="between flex" style="align-items:center">
+            <strong>{{ o.total|rupiah }}</strong>
+            <div class="cluster">
+              {% if o.status == 'menunggu_pembayaran' %}<a class="btn btn-primary btn-sm" href="/bayar/{{ o.order_no }}">Bayar</a>{% endif %}
+              <a class="btn btn-outline btn-sm" href="/akun/pesanan/{{ o.order_no }}">Detail</a>
+            </div>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="empty"><h2>Belum ada pesanan</h2><p class="muted">Pesananmu akan muncul di sini.</p><a class="btn btn-primary" href="/katalog">Mulai belanja</a></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% from "partials/product_card.html" import card with context %}
+{% block title %}Wishlist | Second Luxe{% endblock %}
+{% block meta_description %}Produk branded preloved yang kamu simpan di Second Luxe.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <h1>Wishlist</h1>
+    <p class="muted">{{ products|length }} produk tersimpan</p>
+    {% if not current_user and products %}<p class="small muted">Wishlist ini tersimpan di perangkat ini. <a href="/masuk?next=/wishlist">Masuk</a> agar tidak hilang dan dapat notifikasi harga turun.</p>{% endif %}
+  </div>
+  {% if products %}
+  <div class="product-grid">
+    {% for p in products %}
+    <div class="wish-item">
+      {{ card(p) }}
+      {% if drops.get(p.id) %}<p class="small sale-text mt-1 mb-0">Harga turun dari {{ drops[p.id]|rupiah }}</p>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="empty">
+    <h2>Belum ada produk tersimpan</h2>
+    <p class="muted">Ketuk ikon hati pada produk untuk menyimpannya di sini.</p>
+    <a class="btn btn-primary" href="/katalog">Jelajahi produk</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

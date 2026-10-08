@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% block title %}Produk — Admin Second Luxe{% endblock %}
+{% block admin_content %}
+<div class="admin-head"><div><p class="eyebrow">Katalog</p><h1>Produk</h1></div></div>
+<section class="admin-card">
+<h2>Tambah produk</h2>
+<form method="post" enctype="multipart/form-data" class="admin-form-grid">
+<input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+<div class="field"><label>Nama produk</label><input name="name" required></div>
+<div class="field"><label>Brand</label><select name="brand_id" required>{% for b in brands %}<option value="{{ b.id }}">{{ b.name }}</option>{% endfor %}</select></div>
+<div class="field"><label>Kategori</label><select name="category_id" required>{% for c in categories %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div>
+<div class="field"><label>Gender</label><select name="gender"><option value="unisex">Unisex</option><option value="wanita">Wanita</option><option value="pria">Pria</option></select></div>
+<div class="field"><label>Ukuran</label><input name="size" placeholder="M / 38 / Medium"></div><div class="field"><label>Warna</label><input name="color"></div>
+<div class="field"><label>Bahan</label><input name="material"></div><div class="field"><label>Kondisi (1–10)</label><input type="number" name="condition_score" min="1" max="10" value="9"></div>
+<div class="field"><label>Harga</label><input name="price" inputmode="numeric" required placeholder="12500000"></div><div class="field"><label>Harga asli</label><input name="original_price" inputmode="numeric"></div>
+<div class="field"><label>Stok</label><input type="number" name="stock" min="0" value="1"></div><div class="field"><label>Status</label><select name="status"><option value="available">Tersedia</option><option value="held">Dibooking</option><option value="sold">Sold</option></select></div>
+<div class="field full"><label>Deskripsi</label><textarea name="description"></textarea></div><div class="field"><label>Catatan kondisi</label><textarea name="condition_notes"></textarea></div><div class="field"><label>Minus/cacat</label><textarea name="flaws"></textarea></div><div class="field"><label>Kelengkapan</label><input name="completeness" placeholder="Dustbag, box, nota"></div>
+<div class="field full"><label>Foto produk</label><input type="file" name="photos" accept="image/jpeg,image/png,image/webp" multiple><p class="hint">Maks. 5 MB/foto. Jika kosong, placeholder otomatis dipakai.</p></div>
+<label class="check"><input type="checkbox" name="is_featured"> Jadikan koleksi pilihan</label>
+<div class="full"><button class="btn btn-primary" type="submit">Simpan Produk</button></div>
+</form>
+</section>
+<section class="admin-card"><div class="admin-card-head"><h2>Daftar produk</h2><form class="inline-form"><input name="q" placeholder="Cari produk/brand" value="{{ request.args.get('q','') }}"><select name="status"><option value="">Semua status</option>{% for s in ['available','held','sold'] %}<option value="{{ s }}" {% if request.args.get('status')==s %}selected{% endif %}>{{ s|capitalize }}</option>{% endfor %}</select><button class="btn btn-sm btn-outline">Filter</button></form></div>
+<div class="admin-table-wrap"><table class="admin-table"><thead><tr><th>Produk</th><th>Harga</th><th>Status</th><th>Views</th><th></th></tr></thead><tbody>{% for p in rows %}<tr><td><div class="admin-product"><img src="{{ p.image_url or '/placeholder/%d.svg?v=1'|format(p.id) }}"><div><b>{{ p.brand_name }}</b><span>{{ p.name }}</span><small>{{ p.category_name }}</small></div></div></td><td>{{ p.price|rupiah }}</td><td><span class="admin-status {{ p.status }}">{{ p.status }}</span></td><td>{{ p.views }}</td><td><a class="btn btn-sm btn-outline" href="/admin/produk/{{ p.id }}/edit">Edit</a></td></tr>{% else %}<tr><td colspan="5">Belum ada produk.</td></tr>{% endfor %}</tbody></table></div></section>
+{% endblock %}

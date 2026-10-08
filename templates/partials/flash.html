@@ -1,0 +1,13 @@
+{# Pesan flash: success | error | warning | info #}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+<div class="flash-stack container" role="status" aria-live="polite">
+  {% for category, message in messages %}
+  <div class="flash flash-{{ category if category in ['success','error','warning','info'] else 'info' }}">
+    <span>{{ message }}</span>
+    <button type="button" class="flash-close" aria-label="Tutup pesan" data-flash-close>&times;</button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %}
+{% endwith %}

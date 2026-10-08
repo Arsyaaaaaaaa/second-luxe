@@ -1,0 +1,38 @@
+{# Detail pesanan. Variabel: order, items, events. Dipakai di akun dan pelacakan. #}
+<div class="order-head">
+  <div>
+    <h2 class="mb-0">{{ order.order_no }}</h2>
+    <p class="small muted mb-0">Dipesan {{ order.created_at|tanggal }}</p>
+  </div>
+  <span class="status status-{{ order.status }}">{{ order.status|status_label }}</span>
+</div>
+
+<div class="order-grid">
+  <section>
+    <h3 class="h-sub" style="margin-top:0">Produk</h3>
+    <ul class="mini-items">
+      {% for i in items %}
+      <li><img src="{{ i.image_url or '/placeholder/%d.svg' % i.product_id }}" alt="" width="48" height="60" loading="lazy">
+        <span><a href="/produk/{{ i.slug }}">{{ i.product_name }}</a></span><strong>{{ i.price|rupiah }}</strong></li>
+      {% endfor %}
+    </ul>
+    <div class="summary-row"><span>Subtotal</span><span>{{ order.subtotal|rupiah }}</span></div>
+    {% if order.discount %}<div class="summary-row"><span>Diskon {{ order.voucher_code }}</span><span class="verified-text">-{{ order.discount|rupiah }}</span></div>{% endif %}
+    <div class="summary-row"><span>Ongkir ({{ order.courier }})</span><span>{{ order.shipping_cost|rupiah }}</span></div>
+    <div class="summary-row summary-total"><span>Total</span><span>{{ order.total|rupiah }}</span></div>
+    <p class="small muted mt-1">Pembayaran: {{ order.payment_method }} &middot; <span class="status status-{{ order.payment_status }}">{{ order.payment_status|status_label }}</span></p>
+
+    <h3 class="h-sub">Alamat pengiriman</h3>
+    <p class="mb-0">{{ order.recipient }} &middot; {{ order.phone }}<br>{{ order.street }}<br>{{ order.city }}, {{ order.province }} {{ order.postal_code }}</p>
+    {% if order.tracking_no %}<p class="mt-1 mb-0">Nomor resi: <strong>{{ order.tracking_no }}</strong> ({{ order.courier }})</p>{% endif %}
+  </section>
+
+  <section>
+    <h3 class="h-sub" style="margin-top:0">Status pesanan</h3>
+    <ol class="timeline">
+      {% for e in events|reverse %}
+      <li><strong>{{ e.status|status_label }}</strong><time datetime="{{ e.created_at }}">{{ e.created_at|tanggal }} {{ e.created_at[11:16] }} UTC</time>{% if e.note %}<span class="small muted">{{ e.note }}</span>{% endif %}</li>
+      {% endfor %}
+    </ol>
+  </section>
+</div>

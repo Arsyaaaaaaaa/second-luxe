@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}FAQ: Pertanyaan Umum | Second Luxe{% endblock %}
+{% block meta_description %}Jawaban untuk pertanyaan tentang keaslian, kondisi barang, booking, tawar harga, pembayaran, pengiriman, dan retur di Second Luxe.{% endblock %}
+{% block head_extra %}<script type="application/ld+json">{{ json_ld|tojson }}</script>{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Pertanyaan umum</h1><p class="muted">Tidak menemukan jawabannya? <a href="/kontak">Hubungi kami</a>.</p></div>
+  <div class="faq prose">
+    {% for q, a in faq %}
+    <details{{ ' open' if loop.first }}><summary>{{ q }}</summary><p>{{ a }}</p></details>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

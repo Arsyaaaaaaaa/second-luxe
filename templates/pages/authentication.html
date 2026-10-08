@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% from "partials/icons.html" import icon %}
+{% block title %}Proses Autentikasi Barang Branded | Second Luxe{% endblock %}
+{% block meta_description %}Enam langkah autentikasi Second Luxe: dari pemeriksaan material dan hardware sampai sertifikat keaslian digital untuk setiap produk.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Proses autentikasi</h1>
+    <p class="muted lead">Kami tidak menayangkan barang yang belum lolos. Inilah yang terjadi sebelum sebuah produk muncul di toko.</p></div>
+
+  <ol class="process-steps">
+    <li><strong>Penerimaan dan pencatatan</strong><p class="small muted mb-0">Barang dicatat, difoto, dan diberi nomor unik. Riwayat penjual dikumpulkan.</p></li>
+    <li><strong>Material dan jahitan</strong><p class="small muted mb-0">Tekstur kulit atau kain, kerapian jahitan, dan konsistensi pola dicek dengan loop.</p></li>
+    <li><strong>Hardware dan nomor seri</strong><p class="small muted mb-0">Berat, ukiran, warna logam, resleting, serta format kode produksi.</p></li>
+    <li><strong>Pembandingan referensi</strong><p class="small muted mb-0">Detail dicocokkan dengan produk resmi brand dan arsip barang asli kami.</p></li>
+    <li><strong>Penilaian kondisi</strong><p class="small muted mb-0">Skor 1 sampai 10 dan daftar minus ditulis apa adanya, tanpa dipercantik.</p></li>
+    <li><strong>Sertifikat digital</strong><p class="small muted mb-0">Barang yang lolos mendapat nomor sertifikat yang bisa dicek dan dicetak.</p></li>
+  </ol>
+
+  <section class="section-tight">
+    <h2>Yang kami periksa per kategori</h2>
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>Kategori</th><th>Fokus pemeriksaan</th></tr></thead>
+      <tbody>
+        <tr><td>Tas</td><td style="white-space:normal">Jahitan, stempel, hardware, lapisan dalam, nomor seri, bentuk dan aroma kulit</td></tr>
+        <tr><td>Pakaian</td><td style="white-space:normal">Label dan tag, kualitas jahitan, bahan, kancing dan resleting</td></tr>
+        <tr><td>Sepatu</td><td style="white-space:normal">Sol, lem dan jahitan, insole, kode produksi, kotak asli bila ada</td></tr>
+        <tr><td>Aksesoris</td><td style="white-space:normal">Berat logam, ukiran, kilap, penutup dan kelengkapan</td></tr>
+      </tbody></table></div>
+  </section>
+
+  <section class="section-tight" id="cek">
+    <h2>Cek nomor sertifikat</h2>
+    <p class="muted">Punya nomor sertifikat Second Luxe? Pastikan keasliannya di sini.</p>
+    <form class="search-form" action="/cek-sertifikat" method="get">
+      <label class="sr-only" for="no">Nomor sertifikat</label>
+      <input id="no" name="no" type="text" placeholder="SL-2026-0001" maxlength="30" required>
+      <button class="btn btn-primary" type="submit">Cek</button>
+    </form>
+  </section>
+
+  <div class="cert-card mt-2">{{ icon('shield', 30) }}<div><strong>Masih ragu?</strong>
+    <p class="small muted mb-0">Garansi uang kembali melindungi setiap pembelian. <a href="/garansi">Baca garansi kami</a>.</p></div></div>
+</div>
+{% endblock %}

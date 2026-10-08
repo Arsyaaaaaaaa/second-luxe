@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Kebijakan Retur 7 Hari | Second Luxe{% endblock %}
+{% block meta_description %}Retur 7 hari setelah barang diterima bila tidak sesuai deskripsi atau rusak saat pengiriman. Lihat syarat dan alurnya.{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head"><h1>Kebijakan retur</h1>
+    <p class="muted lead">Kamu punya 7 hari setelah barang diterima untuk mengajukan retur.</p></div>
+  <div class="prose">
+    <h2>Alasan yang bisa diretur</h2>
+    <div class="table-wrap"><table class="table">
+      <thead><tr><th>Alasan</th><th>Bisa retur</th><th>Ongkir pengembalian</th></tr></thead>
+      <tbody>
+        <tr><td>Barang tidak sesuai deskripsi atau foto</td><td>Ya</td><td>Kami tanggung</td></tr>
+        <tr><td>Cacat yang tidak tertulis di Minus dan Cacat</td><td>Ya</td><td>Kami tanggung</td></tr>
+        <tr><td>Rusak saat pengiriman</td><td>Ya (wajib ada video unboxing)</td><td>Kami tanggung</td></tr>
+        <tr><td>Keaslian diragukan</td><td>Ya, lihat <a href="/garansi">garansi</a></td><td>Kami tanggung</td></tr>
+        <tr><td>Berubah pikiran atau kurang cocok</td><td>Tidak, karena stok hanya satu</td><td>-</td></tr>
+      </tbody></table></div>
+
+    <h2>Syarat</h2>
+    <ul>
+      <li>Barang belum dipakai setelah diterima, dengan tag, kelengkapan, dan segel kami utuh.</li>
+      <li>Rekam video saat membuka paket, tanpa jeda, sampai barang terlihat jelas.</li>
+      <li>Ajukan retur dalam 7 hari sejak barang diterima.</li>
+    </ul>
+
+    <h2>Alur retur</h2>
+    <ol>
+      <li>Ajukan lewat <a href="/kontak">kontak</a> dengan nomor pesanan dan alasan.</li>
+      <li>Setelah disetujui, kirim barang ke alamat yang kami berikan.</li>
+      <li>Barang diperiksa, lalu uang dikembalikan ke metode pembayaran asal dalam 3 sampai 5 hari kerja.</li>
+    </ol>
+    <p><a class="btn btn-primary" href="/kontak">Ajukan retur</a></p>
+  </div>
+</div>
+{% endblock %}
